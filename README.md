@@ -4,6 +4,8 @@ A personal voice assistant built as a custom **Google Gemini Gem**. It answers o
 
 **Project page:** https://sneax74.github.io/voice-agent/
 
+**Try it in Gemini:** https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing (sign in with a Google account)
+
 ## How it is built
 
 | Part | What it does |
@@ -15,8 +17,8 @@ A personal voice assistant built as a custom **Google Gemini Gem**. It answers o
 
 ## How to use it
 
-1. Open the Gemini app (or gemini.google.com) and go to **Gems**.
-2. Open **Marson's Voice Assistant**.
+1. Open the shared Gem: https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing
+2. Sign in with a Google account if asked.
 3. Tap the microphone and talk, for example:
    - "Tere! Mida ma täna kõige esimesena tegema peaksin?"
    - "Give me three video ideas for a gym client."
