@@ -2,7 +2,12 @@
 // The Gemini key is stored as a secret named GEMINI_API_KEY in Cloudflare,
 // never in this file and never in the website.
 
-const MODEL = "gemini-3.8-flash";
+const MODEL = "gemini-3.8-flash";          // main model
+const FAST_MODEL = "gemini-3.5-flash-lite"; // used if the main model is slow
+const MAIN_TIMEOUT_MS = 7000;
+const TTS_MODEL = "gemini-3.8-flash-lite-tts";
+const TTS_VOICE = "Charon";
+const MAX_TTS_CHARS = 700;
 const ALLOWED_ORIGINS = [
   "https://sneax74.github.io",
   "http://localhost:8765",
@@ -62,19 +67,19 @@ function json(body, status, origin) {
   });
 }
 
-async function callGemini(env, contents, withThinking) {
+async function callGemini(env, contents, withThinking, model = MODEL, timeoutMs = 25000, level = "minimal") {
   const body = {
     systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
     contents,
     generationConfig: { temperature: 0.7, maxOutputTokens: MAX_OUTPUT_TOKENS },
   };
-  if (withThinking) body.generationConfig.thinkingConfig = { thinkingLevel: "low" };
+  if (withThinking) body.generationConfig.thinkingConfig = { thinkingLevel: level };
   const started = Date.now();
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 25000);
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
@@ -82,14 +87,14 @@ async function callGemini(env, contents, withThinking) {
         signal: ctrl.signal,
       }
     );
-    console.log(JSON.stringify({ gemini_status: res.status, ms: Date.now() - started, thinking: withThinking }));
+    console.log(JSON.stringify({ model, gemini_status: res.status, ms: Date.now() - started, thinking: withThinking }));
     if (!res.ok) {
       const detail = (await res.clone().text()).slice(0, 400);
       console.log(JSON.stringify({ gemini_error: detail }));
     }
     return res;
   } catch (e) {
-    console.log(JSON.stringify({ gemini_fetch_failed: String(e), ms: Date.now() - started }));
+    console.log(JSON.stringify({ model, gemini_fetch_failed: String(e), ms: Date.now() - started }));
     return new Response("timeout", { status: 504 });
   } finally {
     clearTimeout(timer);
@@ -115,7 +120,7 @@ export default {
       for (const model of [u.searchParams.get("m") || MODEL]) {
         const t2 = Date.now();
         try {
-          const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Say hi in three words." }] }] }), signal: AbortSignal.timeout(20000) });
+          const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Say hi in three words." }] }], ...(u.searchParams.get("t") ? { generationConfig: { thinkingConfig: { thinkingLevel: u.searchParams.get("t") } } } : {}) }), signal: AbortSignal.timeout(20000) });
           const txt = await r.text();
           out.gen = { model, status: r.status, ms: Date.now() - t2, body: txt.slice(0, 300) };
         } catch (e) { out.gen = { model, failed: String(e), ms: Date.now() - t2 }; }
@@ -128,6 +133,33 @@ export default {
 
     let data;
     try { data = await request.json(); } catch { return json({ error: "Bad request." }, 400, origin); }
+
+    // Speech: turn an answer into audio with Gemini's voice
+    if (new URL(request.url).pathname === "/speak") {
+      const text = String(data.text || "").slice(0, MAX_TTS_CHARS).trim();
+      if (!text) return json({ error: "No text." }, 400, origin);
+      const started = Date.now();
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text }] }],
+            generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } } },
+          }),
+          signal: AbortSignal.timeout(15000),
+        });
+        console.log(JSON.stringify({ tts_status: r.status, ms: Date.now() - started }));
+        if (!r.ok) { console.log(JSON.stringify({ tts_error: (await r.text()).slice(0, 300) })); return json({ error: "No audio." }, 502, origin); }
+        const out = await r.json();
+        const part = (out.candidates?.[0]?.content?.parts || []).find(p => p.inlineData && p.inlineData.data);
+        if (!part) return json({ error: "No audio." }, 502, origin);
+        return json({ audio: part.inlineData.data, mime: part.inlineData.mimeType || "audio/wav" }, 200, origin);
+      } catch (e) {
+        console.log(JSON.stringify({ tts_failed: String(e), ms: Date.now() - started }));
+        return json({ error: "No audio." }, 504, origin);
+      }
+    }
     const msgs = Array.isArray(data.messages) ? data.messages.slice(-MAX_TURNS) : [];
     if (!msgs.length) return json({ error: "No message." }, 400, origin);
 
@@ -141,8 +173,10 @@ export default {
       return json({ error: "The last message must be from the visitor." }, 400, origin);
     }
 
-    let res = await callGemini(env, contents, true);
-    if (res.status === 400) res = await callGemini(env, contents, false); // model without thinking settings
+    let used = MODEL;
+    let res = await callGemini(env, contents, true, MODEL, MAIN_TIMEOUT_MS);
+    if (res.status === 400) res = await callGemini(env, contents, false, MODEL, MAIN_TIMEOUT_MS);
+    if (!res.ok) { used = FAST_MODEL; res = await callGemini(env, contents, false, FAST_MODEL, 15000); }
     if (!res.ok) {
       const status = res.status === 429 ? 429 : 502;
       return json({ error: status === 429 ? "Too many questions right now. Try again in a minute." : "The assistant could not answer. Try again." }, status, origin);
@@ -154,6 +188,6 @@ export default {
       .join(" ")
       .replace(/[*#_`>]/g, "")
       .trim();
-    return json({ reply: reply || "Sorry, I didn't catch that. Could you ask again?" }, 200, origin);
+    return json({ reply: reply || "Sorry, I didn't catch that. Could you ask again?", model: used }, 200, origin);
   },
 };

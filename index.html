@@ -497,7 +497,7 @@
 
   async function ask(text){
     text = String(text || "").trim(); if (!text) return;
-    stopListening(true); if (synth) synth.cancel();
+    stopListening(true); stopAudio(); if (synth) synth.cancel();
     bubble("you", text);
     history.push({ role:"user", text });
     setState("thinking");
@@ -528,7 +528,40 @@
     }
     return null;
   }
-  function speak(text){
+  // Gemini's own voice (via the worker); falls back to the browser voice.
+  let player = null, playCtx = null, playAnalyser = null, playData = null, speakToken = 0;
+  function stopAudio(){ speakToken++; if (player){ try { player.pause(); } catch {} player = null; } }
+  async function speak(text){
+    const token = ++speakToken;
+    if (WORKER_URL && navigator.onLine !== false){
+      try {
+        setState("thinking");
+        const r = await fetch(WORKER_URL + "/speak", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ text }), signal: AbortSignal.timeout ? AbortSignal.timeout(16000) : undefined });
+        const j = await r.json().catch(() => ({}));
+        if (token !== speakToken) return;
+        if (r.ok && j.audio){
+          const bin = atob(j.audio), buf = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+          const url = URL.createObjectURL(new Blob([buf], { type: j.mime || "audio/wav" }));
+          const a = new Audio(url); player = a;
+          try {
+            playCtx = playCtx || new (window.AudioContext || window.webkitAudioContext)();
+            if (playCtx.state === "suspended") await playCtx.resume();
+            const src = playCtx.createMediaElementSource(a);
+            playAnalyser = playCtx.createAnalyser(); playAnalyser.fftSize = 256;
+            src.connect(playAnalyser); playAnalyser.connect(playCtx.destination);
+            playData = new Uint8Array(playAnalyser.frequencyBinCount);
+          } catch { playAnalyser = null; }
+          a.onplay = () => setState("speaking");
+          a.onended = a.onerror = () => { URL.revokeObjectURL(url); if (player === a) player = null; playAnalyser = null; afterSpeak(); };
+          await a.play();
+          return;
+        }
+      } catch (e) { if (token !== speakToken) return; }
+    }
+    browserSpeak(text);
+  }
+  function browserSpeak(text){
     const v = synth ? pickVoice(lang) : null;
     if (!synth || !v){ if (!speak.warned){ bubble("sys", L[lang].noVoice); speak.warned = true; } afterSpeak(); return; }
     synth.cancel();
@@ -562,7 +595,7 @@
   }
   function startListening(){
     if (!Rec){ bubble("sys", L[lang].noRec); setState("idle"); return; }
-    if (synth) synth.cancel();
+    stopAudio(); if (synth) synth.cancel();
     wantListen = true;
     rec = new Rec(); rec.lang = L[lang].rec; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
     let finalText = "";
@@ -593,7 +626,7 @@
 
   orb.addEventListener("click", () => {
     if (state === "idle") startListening();
-    else { wantListen = false; stopListening(); if (synth) synth.cancel(); clearInterval(speak.keep); setState("idle"); }
+    else { wantListen = false; stopListening(); stopAudio(); if (synth) synth.cancel(); clearInterval(speak.keep); setState("idle"); }
   });
   form.addEventListener("submit", e => { e.preventDefault(); const t = input.value; input.value = ""; wantListen = false; ask(t); });
 
@@ -603,7 +636,7 @@
     if (b.dataset.lang && b.dataset.lang !== lang) setLang(b.dataset.lang);
     document.getElementById("talk").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block:"start" });
     const a = A[b.dataset.say]; if (!a) return;
-    wantListen = false; stopListening(); if (synth) synth.cancel();
+    wantListen = false; stopListening(); stopAudio(); if (synth) synth.cancel();
     bubble("you", a.q[lang]); bubble("bot", a[lang]);
     history.push({ role:"user", text:a.q[lang] }, { role:"model", text:a[lang] });
     speak(a[lang]);
@@ -623,6 +656,7 @@
     const w = cv.clientWidth, h = cv.clientHeight, cx = w/2, cy = h/2, R = w * .21;
     ctx.clearRect(0,0,w,h);
     const m = micLevel(); if (m !== null) targetLevel = .25 + m * .9;
+    if (playAnalyser && state === "speaking"){ playAnalyser.getByteFrequencyData(playData); let s = 0; for (let i = 2; i < 48; i++) s += playData[i]; targetLevel = .3 + Math.min(1, s / (46 * 140)) * .9; }
     level += (targetLevel - level) * .1;
     const listening = state === "listening", speaking = state === "speaking";
     // soft rings
