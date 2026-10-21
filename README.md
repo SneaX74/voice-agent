@@ -29,3 +29,13 @@ A personal voice assistant built as a custom **Google Gemini Gem**. It answers o
 1. Go to gemini.google.com, open **Gems**, then **New Gem**.
 2. Paste the contents of [`system-prompt.md`](system-prompt.md) into **Instructions** and change the personal details to your own.
 3. Save, then open the Gem in the Gemini app and talk to it.
+
+## Talking on the website
+
+The page at https://sneax74.github.io/voice-agent/ has its own voice assistant:
+
+- **Listening:** the browser's speech recognition (Chrome, Edge and Safari), in English, Estonian or Russian.
+- **Thinking:** Google Gemini (`gemini-3.8-flash`) through a small Cloudflare Worker in [`worker/worker.js`](worker/worker.js). The Worker keeps the Gemini API key secret, only accepts requests from this website and limits message length.
+- **Speaking:** the browser's built-in voice.
+
+If the Worker isn't reachable, the page falls back to prepared answers.

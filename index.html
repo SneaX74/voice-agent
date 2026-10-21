@@ -65,38 +65,59 @@
   @media (max-width:900px){ .hero .grid{grid-template-columns:1fr} }
 
   /* talk */
-  .talk{background:var(--ink);color:#E7F0F2;padding:72px 0}
-  .talk h2{font:800 clamp(34px,5vw,58px)/1 var(--display);letter-spacing:-.03em;margin:0 0 12px;color:#fff}
-  .talk .intro{max-width:58ch;color:#B9CDD3;margin:0 0 36px}
-  .talk .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:28px}
-  .console{background:#13374B;border:1px solid #23506A;border-radius:24px;padding:24px}
-  .langs{display:inline-flex;background:#0E2A3B;border-radius:999px;padding:4px;gap:4px}
-  .langs button{font:600 14px var(--display);border:0;background:transparent;color:#B9CDD3;padding:8px 14px;border-radius:999px;cursor:pointer}
+  .talk{position:relative;overflow:hidden;background:var(--ink);color:#E7F0F2;padding:84px 0 88px;isolation:isolate}
+  .talk::before{content:"";position:absolute;z-index:-1;left:50%;top:330px;width:900px;height:900px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(31,122,120,.45),rgba(31,122,120,.12) 55%,transparent 72%)}
+  .talk::after{content:"";position:absolute;z-index:-1;inset:auto 0 0 0;height:180px;background:repeating-linear-gradient(90deg,rgba(203,216,220,.05) 0 2px,transparent 2px 14px);mask-image:linear-gradient(to top,#000,transparent)}
+  .talk-head{text-align:center;max-width:680px;margin:0 auto}
+  .talk h2{font:800 clamp(36px,5.4vw,64px)/1 var(--display);letter-spacing:-.03em;margin:0 0 14px;color:#fff}
+  .talk .intro{color:#B9CDD3;margin:0 auto 26px;max-width:54ch}
+  .langs{display:inline-flex;background:#0A2130;border:1px solid #23506A;border-radius:999px;padding:4px;gap:4px}
+  .langs button{font:600 14px var(--display);border:0;background:transparent;color:#B9CDD3;padding:8px 16px;border-radius:999px;cursor:pointer}
   .langs button[aria-pressed="true"]{background:#E7F0F2;color:var(--ink)}
-  .wave{display:block;width:100%;height:150px;margin:22px 0 8px}
-  .status{font:600 16px var(--display);color:#fff;margin:0}
-  .status-sub{font-size:15px;color:#9FB8C0;margin:4px 0 20px}
-  .console .actions{display:flex;flex-wrap:wrap;gap:10px}
-  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--ink)}
-  .btn.amber:hover{background:#F3BE60;border-color:#F3BE60}
-  .btn.ghost{background:transparent;border-color:#5C8496;color:#E7F0F2}
-  .btn.ghost:hover{background:#1A4560}
-  .btn.ghost[aria-pressed="true"]{border-color:var(--amber);color:var(--amber)}
-  .note{font-size:14px;color:#9FB8C0;margin:14px 0 0}
 
-  .side{display:grid;gap:20px;align-content:start}
-  .side h3{font:700 18px var(--display);margin:0 0 10px;color:#fff}
-  .questions{display:grid;gap:8px;margin:0;padding:0;list-style:none}
-  .questions button{width:100%;text-align:left;font:400 17px/1.35 var(--serif);color:#E7F0F2;background:#13374B;border:1px solid #23506A;border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:center}
-  .questions button:hover{border-color:#5C8496}
-  .questions button.playing{border-color:var(--amber);color:#fff}
-  .questions svg{width:18px;height:18px;flex:none;color:var(--amber)}
-  .log{background:#0B2230;border:1px solid #23506A;border-radius:18px;padding:14px;max-height:280px;overflow:auto;display:grid;gap:12px}
-  .msg{font-size:16px;line-height:1.5}
-  .msg b{display:block;font:600 13px var(--display);color:#9FB8C0;margin-bottom:2px}
-  .msg.you b{color:var(--amber)}
-  @media (max-width:900px){ .talk .grid{grid-template-columns:1fr} }
+  .stage{position:relative;width:min(420px,88vw);aspect-ratio:1;margin:18px auto 0}
+  .stage canvas{position:absolute;inset:0;width:100%;height:100%}
+  .orb{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:0;cursor:pointer;
+       background:radial-gradient(circle at 35% 30%,#2B9A97,#1F7A78 45%,#123F4F 100%);color:#fff;display:grid;place-items:center;
+       box-shadow:0 0 0 10px rgba(231,240,242,.06),0 24px 60px rgba(0,0,0,.45);transition:transform .25s ease, background .3s ease}
+  .orb:hover{transform:translate(-50%,-50%) scale(1.03)}
+  .orb svg{width:38%;height:38%}
+  .orb .stop{display:none;width:30%;height:30%;border-radius:12%;background:#fff}
+  .talk[data-state="listening"] .orb{background:radial-gradient(circle at 35% 30%,#F6C871,#E9A93B 50%,#B9791A 100%);color:var(--ink)}
+  .talk[data-state="speaking"] .orb,.talk[data-state="thinking"] .orb{background:radial-gradient(circle at 35% 30%,#3A6E86,#1A4560 55%,#0E2A3B 100%)}
+  .talk:not([data-state="idle"]) .orb svg{display:none}
+  .talk:not([data-state="idle"]) .orb .stop{display:block}
+  .state-line{text-align:center;margin:6px 0 0}
+  .state-line .s1{font:700 22px var(--display);color:#fff;margin:0}
+  .state-line .s2{font-size:16px;color:#9FB8C0;margin:4px auto 0;min-height:1.6em;max-width:48ch}
+  .caption{font-style:italic;color:#F6C871 !important}
+  @media (prefers-reduced-motion: reduce){ .orb{transition:none} }
 
+  .panel{max-width:820px;margin:34px auto 0;background:rgba(10,33,48,.82);border:1px solid #23506A;border-radius:26px;padding:18px;backdrop-filter:blur(6px)}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:thin}
+  .chips button{flex:none;font:500 14px var(--display);color:#E7F0F2;background:#13374B;border:1px solid #2C5C76;border-radius:999px;padding:8px 13px;cursor:pointer}
+  .chips button:hover{border-color:#F6C871;color:#fff}
+  .chat{height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:8px 4px;border-top:1px solid #1E4660;border-bottom:1px solid #1E4660}
+  .bubble{max-width:82%;padding:10px 14px;border-radius:18px;font-size:16.5px;line-height:1.5}
+  .bubble.bot{align-self:flex-start;background:#13374B;border:1px solid #23506A;border-bottom-left-radius:6px}
+  .bubble.you{align-self:flex-end;background:#E7F0F2;color:var(--ink);border-bottom-right-radius:6px}
+  .bubble.sys{align-self:center;max-width:100%;background:none;color:#9FB8C0;font-size:14px;text-align:center;padding:2px 8px}
+  .bubble.typing{display:inline-flex;gap:5px;align-items:center}
+  .bubble.typing i{width:7px;height:7px;border-radius:50%;background:#9FB8C0;animation:blink 1.2s infinite}
+  .bubble.typing i:nth-child(2){animation-delay:.2s}.bubble.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  @media (prefers-reduced-motion: reduce){ .bubble.typing i{animation:none;opacity:.7} }
+  form.ask{display:flex;gap:8px;margin-top:12px}
+  form.ask input{flex:1;min-width:0;font:400 17px var(--serif);color:#fff;background:#0A2130;border:1px solid #2C5C76;border-radius:999px;padding:12px 18px}
+  form.ask input::placeholder{color:#7F9DA8}
+  form.ask button{font:600 15px var(--display);border:0;border-radius:999px;padding:0 20px;background:var(--amber);color:var(--ink);cursor:pointer}
+  .panel-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 18px;align-items:center;margin-top:14px;font-size:14px;color:#9FB8C0}
+  .panel-foot a{color:#B9CDD3}
+  .switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font:500 14px var(--display);color:#B9CDD3}
+  .switch input{appearance:none;width:38px;height:22px;border-radius:999px;background:#2C5C76;position:relative;cursor:pointer;margin:0}
+  .switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#E7F0F2;transition:left .2s}
+  .switch input:checked{background:var(--sea)}
+  .switch input:checked::after{left:19px}
   /* sections */
   section.block{padding:76px 0 20px}
   .block h2{font:800 clamp(32px,4.4vw,50px)/1 var(--display);letter-spacing:-.03em;margin:0 0 10px}
@@ -212,41 +233,42 @@
     </div>
   </section>
 
-  <section class="talk" id="talk">
+  <section class="talk" id="talk" data-state="idle">
     <div class="wrap">
-      <h2>Talk to my assistant</h2>
-      <p class="intro">My voice assistant runs on Google Gemini. Start a live conversation to ask it anything, or pick a question here and hear the answer straight away.</p>
-      <div class="grid">
-        <div class="console">
-          <div class="langs" role="group" aria-label="Answer language">
-            <button data-lang-set="en" aria-pressed="true">English</button>
-            <button data-lang-set="et" aria-pressed="false">Eesti</button>
-          </div>
-          <canvas class="wave" id="wave" aria-hidden="true"></canvas>
-          <p class="status" id="status">Ready when you are</p>
-          <p class="status-sub" id="statusSub">Pick a question, or ask by voice.</p>
-          <div class="actions">
-            <a class="btn amber" id="liveBtn" href="https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing" target="_blank" rel="noopener"><svg><use href="#i-mic"/></svg>Start live conversation in Gemini</a>
-            <button class="btn ghost" id="askBtn" aria-pressed="false"><svg><use href="#i-mic"/></svg>Ask by voice here</button>
-            <button class="btn ghost" id="stopBtn" hidden>Stop</button>
-          </div>
-          <p class="note">The live conversation opens in the Gemini app or website, so you need to be signed in to a Google account. On a phone, tap the microphone there to talk.</p>
+      <div class="talk-head">
+        <h2>Talk to my assistant</h2>
+        <p class="intro">Tap the button and ask anything about me, my studies or Sisulaine Media. It listens, thinks with Google Gemini and answers out loud, right here on the page.</p>
+        <div class="langs" role="group" aria-label="Language you speak">
+          <button data-lang-set="en" aria-pressed="true">English</button>
+          <button data-lang-set="et" aria-pressed="false">Eesti</button>
+          <button data-lang-set="ru" aria-pressed="false">Русский</button>
         </div>
+      </div>
 
-        <div class="side">
-          <div>
-            <h3>Questions you can ask</h3>
-            <ul class="questions" id="questions"></ul>
-          </div>
-          <div>
-            <h3>Conversation</h3>
-            <div class="log" id="log" aria-live="polite"></div>
-          </div>
+      <div class="stage">
+        <canvas id="orbCanvas" aria-hidden="true"></canvas>
+        <button class="orb" id="orb" aria-label="Start talking"><svg><use href="#i-mic"/></svg><span class="stop" aria-hidden="true"></span></button>
+      </div>
+      <div class="state-line" aria-live="polite">
+        <p class="s1" id="s1">Tap to talk</p>
+        <p class="s2" id="s2">Allow the microphone when your browser asks.</p>
+      </div>
+
+      <div class="panel">
+        <div class="chips" id="chips" aria-label="Example questions"></div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <form class="ask" id="askForm">
+          <label class="sr" for="askInput">Type a question</label>
+          <input id="askInput" autocomplete="off" maxlength="500" placeholder="Or type a question…">
+          <button type="submit">Send</button>
+        </form>
+        <div class="panel-foot">
+          <label class="switch"><input type="checkbox" id="handsFree" checked> <span id="hfLabel">Keep listening after each answer</span></label>
+          <span><span id="appLabel">Prefer the app?</span> <a id="appLink" href="https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing" target="_blank" rel="noopener">Open it in Gemini</a></span>
         </div>
       </div>
     </div>
   </section>
-
   <section class="block" id="projects">
     <div class="wrap">
       <h2>Projects</h2>
@@ -342,203 +364,301 @@
 
 <script>
 (() => {
-  const GEM = "https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing";
+  // Address of the Cloudflare Worker that talks to Gemini. Empty = offline mode with prepared answers.
+  const WORKER_URL = "";
 
-  // Answers: text is shown, say is spoken (numbers written out where it helps)
-  const A = {
-    intro: {
-      q: { en: "Who is Marson?", et: "Kes on Marson?" },
-      en: "Hi, I'm Marson's voice assistant. Marson is an entrepreneurship student at EBS University in Estonia and the co-founder of Sisulaine Media, where he builds websites and films marketing videos for businesses like Selver. He speaks Estonian, Russian, English and German, and he uses AI tools every day in his work.",
-      et: "Tere, mina olen Marsoni hääleassistent. Marson õpib EBS-is ettevõtlust ja on Sisulaine Media kaasasutaja. Ta teeb ettevõtetele kodulehti ja turundusvideoid, näiteks Selverile. Ta räägib eesti, vene, inglise ja saksa keelt ning kasutab oma töös iga päev tehisintellekti tööriistu."
-    },
-    study: {
-      q: { en: "What is Marson studying at EBS?", et: "Mida Marson EBS-is õpib?" },
-      en: "Marson studies Impactful Entrepreneurship at EBS University, taught in English. He started in 2026. The program is about building and running companies that make a real difference, with a lot of team work on real business ideas.",
-      et: "Marson õpib EBS-is erialal Impactful Entrepreneurship ja õpe on inglise keeles. Ta alustas 2026. aastal. Õpitakse, kuidas luua ja juhtida ettevõtteid, ning palju tööd tehakse meeskonnas päris äriideedega."
-    },
-    built: {
-      q: { en: "How was this voice assistant built?", et: "Kuidas see hääleassistent tehti?" },
-      en: "I'm a custom Gem in Google Gemini. Marson wrote my instructions: who I am, to answer in the language you speak, to keep answers short for voice, and to ask before sending or publishing anything. His CV is attached so I can answer questions about him, and this page and a QR code share me with anyone.",
-      et: "Ma olen Google Gemini kohandatud Gem. Marson kirjutas mulle juhised: kes ma olen, et vastan samas keeles, milles minuga räägitakse, et hoian vastused häälkõne jaoks lühikesed ja et küsin enne midagi saatmist või avaldamist luba. Tema CV on mulle lisatud ning see leht ja QR-kood jagavad mind kõigiga."
-    },
-    sisulaine: {
-      q: { en: "What does Sisulaine Media do?", et: "Mida Sisulaine Media teeb?" },
-      en: "Sisulaine Media is the company Marson co-founded with Aleksander Kappet. They build custom-coded websites and film social media videos for Estonian businesses. Clients include Selver, JK Tallinna Kalev, Merido Apparel and Lirenza. You can find them at sisulaine dot e e.",
-      et: "Sisulaine Media on ettevõte, mille Marson asutas koos Aleksander Kappetiga. Nad teevad ettevõtetele kodulehti ja sotsiaalmeedia videoid. Klientide seas on Selver, Tallinna Kalev, Merido Apparel ja Lirenza. Rohkem infot leiab aadressilt sisulaine punkt e e.",
-      enText: "Sisulaine Media is the company Marson co-founded with Aleksander Kappet. They build custom-coded websites and film social media videos for Estonian businesses. Clients include Selver, JK Tallinna Kalev, Merido Apparel and Lirenza. You can find them at sisulaine.ee.",
-      etText: "Sisulaine Media on ettevõte, mille Marson asutas koos Aleksander Kappetiga. Nad teevad ettevõtetele kodulehti ja sotsiaalmeedia videoid. Klientide seas on Selver, Tallinna Kalev, Merido Apparel ja Lirenza. Rohkem infot leiab aadressilt sisulaine.ee."
-    },
-    breakfast: {
-      q: { en: "What is EBS Breakfast?", et: "Mis on EBS Breakfast?" },
-      en: "EBS Breakfast is a morning breakfast service for university students in Estonia. Marson proposed it to his EBS team because nothing like it exists yet, and they developed it as their course project.",
-      et: "EBS Breakfast on hommikusöögiteenus Eesti üliõpilastele. Marson pakkus selle oma EBS-i meeskonnale välja, sest midagi sellist veel ei ole, ja nad arendasid seda oma kursuseprojektina."
-    },
-    languages: {
-      q: { en: "Which languages does Marson speak?", et: "Mis keeli Marson räägib?" },
-      en: "Estonian at the highest level, Russian as a native speaker, English at C1, German at B1 with a certificate, and a little Spanish.",
-      et: "Eesti keelt kõrgeimal tasemel, vene keelt emakeelena, inglise keelt C1 tasemel, saksa keelt B1 tasemel koos sertifikaadiga ja natuke hispaania keelt."
-    },
-    contact: {
-      q: { en: "How can I contact Marson?", et: "Kuidas Marsoniga ühendust võtta?" },
-      en: "Email marson dot maks at gmail dot com, or call plus three seven two, five three four zero, one nine zero nine. For a website or a video, you can also go to sisulaine dot e e.",
-      et: "Kirjuta aadressile marson punkt maks ät gmail punkt com või helista numbril pluss kolm seitse kaks, viis kolm neli null, üks üheksa null üheksa. Kodulehe või video jaoks vaata ka sisulaine punkt e e.",
-      enText: "Email marson.maks@gmail.com, or call +372 5340 1909. For a website or a video, you can also go to sisulaine.ee.",
-      etText: "Kirjuta aadressile marson.maks@gmail.com või helista numbril +372 5340 1909. Kodulehe või video jaoks vaata ka sisulaine.ee."
-    }
-  };
-  const ORDER = ["study","built","sisulaine","languages","contact"];
-  const KEYWORDS = {
-    study: ["study","studying","school","university","ebs","õpi","kool","ülikool","eriala"],
-    built: ["built","build","made","assistant","gemini","voice","tehti","assistent","ehita"],
-    sisulaine: ["sisulaine","company","business","website","video","firma","ettevõte","kodulehe","klient"],
-    breakfast: ["breakfast","hommik"],
-    languages: ["language","speak","keel","räägi"],
-    contact: ["contact","email","phone","call","reach","ühendust","telefon","mail","kirjuta"],
-    intro: ["who","about him","kes","tutvusta"]
-  };
-
-  let lang = "en";
   const $ = s => document.querySelector(s);
-  const status = $("#status"), statusSub = $("#statusSub"), log = $("#log"), stopBtn = $("#stopBtn"), askBtn = $("#askBtn");
-  const T = {
-    en: { ready:"Ready when you are", readySub:"Pick a question, or ask by voice.", speaking:"Speaking", listening:"Listening…", listeningSub:"Ask one of the questions in your own words.", you:"You", bot:"Marson's assistant", noVoice:"Your browser has no Estonian voice, so the answer is shown as text.", nomatch:"I can answer the questions on this page. For anything else, start a live conversation in Gemini.", noRec:"Voice input isn't supported in this browser. Try Chrome, or tap a question.", greet:"Hi, I'm Marson's voice assistant. Pick a question, ask by voice, or start a live conversation in Gemini." },
-    et: { ready:"Valmis", readySub:"Vali küsimus või küsi häälega.", speaking:"Räägin", listening:"Kuulan…", listeningSub:"Küsi mõnda neist küsimustest oma sõnadega.", you:"Sina", bot:"Marsoni assistent", noVoice:"Brauseris pole eestikeelset häält, seega näitan vastust tekstina.", nomatch:"Saan vastata sellel lehel olevatele küsimustele. Muu jaoks alusta Geminis otsevestlust.", noRec:"See brauser ei toeta häälsisestust. Proovi Chrome'i või vali küsimus.", greet:"Tere, mina olen Marsoni hääleassistent. Vali küsimus, küsi häälega või alusta Geminis otsevestlust." }
+  const talk = $("#talk"), orb = $("#orb"), s1 = $("#s1"), s2 = $("#s2"), chat = $("#chat"),
+        chips = $("#chips"), form = $("#askForm"), input = $("#askInput"), handsFree = $("#handsFree");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- text ----------
+  const L = {
+    en: { rec:"en-US", tap:"Tap to talk", tapSub:"Allow the microphone when your browser asks.", listening:"Listening…", listeningSub:"Ask your question. Tap again to stop.",
+          thinking:"Thinking…", speaking:"Speaking…", speakingSub:"Tap to stop.", greet:"Hi! I'm Marson's voice assistant. Ask me about his studies, his company Sisulaine Media, or how to reach him.",
+          noRec:"Voice input doesn't work in this browser. Use Chrome, Edge or Safari, or type your question.", noMic:"The microphone is blocked. Allow it in your browser's address bar, or type your question.",
+          noVoice:"This browser has no voice for this language, so the answer is shown as text.", err:"I couldn't reach the assistant just now. Here's a prepared answer instead.",
+          offline:"Live answers aren't switched on yet, so I'm using prepared answers.", nomatch:"I don't have a prepared answer for that. Try one of the example questions, or open the assistant in Gemini.",
+          heard:"Didn't catch that. Tap and try again.", placeholder:"Or type a question…", send:"Send", hf:"Keep listening after each answer", app:"Prefer the app?", appLink:"Open it in Gemini", start:"Start talking", stop:"Stop" },
+    et: { rec:"et-EE", tap:"Vajuta ja räägi", tapSub:"Luba mikrofon, kui brauser küsib.", listening:"Kuulan…", listeningSub:"Esita oma küsimus. Lõpetamiseks vajuta uuesti.",
+          thinking:"Mõtlen…", speaking:"Räägin…", speakingSub:"Vajuta, et peatada.", greet:"Tere! Olen Marsoni hääleassistent. Küsi minult tema õpingute, ettevõtte Sisulaine Media või kontaktide kohta.",
+          noRec:"See brauser ei toeta häälsisestust. Kasuta Chrome'i, Edge'i või Safarit või kirjuta küsimus.", noMic:"Mikrofon on blokeeritud. Luba see brauseri aadressiribalt või kirjuta küsimus.",
+          noVoice:"Brauseris pole selle keele häält, seega näitan vastust tekstina.", err:"Ma ei saanud praegu assistendiga ühendust. Siin on ettevalmistatud vastus.",
+          offline:"Otsevastused pole veel sisse lülitatud, seega kasutan ettevalmistatud vastuseid.", nomatch:"Mul pole sellele ettevalmistatud vastust. Proovi mõnda näidisküsimust või ava assistent Geminis.",
+          heard:"Ei kuulnud hästi. Vajuta ja proovi uuesti.", placeholder:"Või kirjuta küsimus…", send:"Saada", hf:"Kuula pärast iga vastust edasi", app:"Eelistad äppi?", appLink:"Ava see Geminis", start:"Alusta rääkimist", stop:"Peata" },
+    ru: { rec:"ru-RU", tap:"Нажмите и говорите", tapSub:"Разрешите доступ к микрофону, когда браузер спросит.", listening:"Слушаю…", listeningSub:"Задайте вопрос. Нажмите ещё раз, чтобы остановить.",
+          thinking:"Думаю…", speaking:"Говорю…", speakingSub:"Нажмите, чтобы остановить.", greet:"Привет! Я голосовой ассистент Марсона. Спросите меня о его учёбе, компании Sisulaine Media или как с ним связаться.",
+          noRec:"Этот браузер не поддерживает голосовой ввод. Используйте Chrome, Edge или Safari, или напишите вопрос.", noMic:"Микрофон заблокирован. Разрешите его в адресной строке браузера или напишите вопрос.",
+          noVoice:"В браузере нет голоса для этого языка, поэтому ответ показан текстом.", err:"Не удалось связаться с ассистентом. Вот подготовленный ответ.",
+          offline:"Живые ответы ещё не включены, поэтому я использую подготовленные ответы.", nomatch:"У меня нет подготовленного ответа на это. Попробуйте один из примеров или откройте ассистента в Gemini.",
+          heard:"Не расслышал. Нажмите и попробуйте ещё раз.", placeholder:"Или напишите вопрос…", send:"Отправить", hf:"Продолжать слушать после ответа", app:"Удобнее в приложении?", appLink:"Открыть в Gemini", start:"Начать разговор", stop:"Остановить" }
   };
 
-  function addMsg(who, text){
-    const d = document.createElement("div");
-    d.className = "msg" + (who === "you" ? " you" : "");
-    d.innerHTML = "<b></b><span></span>";
-    d.querySelector("b").textContent = who === "you" ? T[lang].you : T[lang].bot;
-    d.querySelector("span").textContent = text;
-    log.appendChild(d); log.scrollTop = log.scrollHeight;
-  }
+  // Prepared answers: used by the intro buttons, as a fallback, and when the live assistant is off.
+  const A = {
+    intro: { q:{en:"Who is Marson?",et:"Kes on Marson?",ru:"Кто такой Марсон?"},
+      en:"Marson is an entrepreneurship student at EBS University in Estonia and the co-founder of Sisulaine Media, where he builds websites and films marketing videos for businesses like Selver. He speaks Estonian, Russian, English and German.",
+      et:"Marson õpib EBS-is ettevõtlust ja on Sisulaine Media kaasasutaja. Ta teeb ettevõtetele kodulehti ja turundusvideoid, näiteks Selverile. Ta räägib eesti, vene, inglise ja saksa keelt.",
+      ru:"Марсон учится предпринимательству в университете EBS в Эстонии и является сооснователем Sisulaine Media, где он делает сайты и снимает маркетинговые видео для компаний, например для Selver. Он говорит на эстонском, русском, английском и немецком." },
+    study: { q:{en:"What is Marson studying at EBS?",et:"Mida Marson EBS-is õpib?",ru:"Что Марсон изучает в EBS?"},
+      en:"Marson studies Impactful Entrepreneurship at EBS University, taught in English, since 2026. It's about building and running companies that make a real difference, with a lot of team work on real business ideas.",
+      et:"Marson õpib alates 2026. aastast EBS-is erialal Impactful Entrepreneurship, õpe on inglise keeles. Õpitakse ettevõtete loomist ja juhtimist ning palju tehakse meeskonnatööd päris äriideedega.",
+      ru:"С 2026 года Марсон изучает Impactful Entrepreneurship в университете EBS, обучение на английском. Программа о том, как создавать и вести компании, с большим количеством командной работы над реальными бизнес-идеями." },
+    built: { q:{en:"How were you built?",et:"Kuidas sind tehti?",ru:"Как тебя сделали?"},
+      en:"Marson built me for an EBS assignment. I think with Google Gemini, and this page uses your browser's speech recognition and voice, so you can talk to me directly here.",
+      et:"Marson tegi mind EBS-i ülesande jaoks. Ma mõtlen Google Gemini abil ning see leht kasutab brauseri kõnetuvastust ja häält, nii et saad minuga otse siin rääkida.",
+      ru:"Марсон создал меня для задания в EBS. Я думаю с помощью Google Gemini, а эта страница использует распознавание речи и голос вашего браузера, поэтому со мной можно говорить прямо здесь." },
+    sisulaine: { q:{en:"What does Sisulaine Media do?",et:"Mida Sisulaine Media teeb?",ru:"Чем занимается Sisulaine Media?"},
+      en:"Sisulaine Media is the company Marson co-founded with Aleksander Kappet. They build custom-coded websites and film social media videos for Estonian businesses like Selver, JK Tallinna Kalev, Merido Apparel and Lirenza.",
+      et:"Sisulaine Media on ettevõte, mille Marson asutas koos Aleksander Kappetiga. Nad teevad kodulehti ja sotsiaalmeedia videoid Eesti ettevõtetele, näiteks Selverile, Tallinna Kalevile, Merido Apparelile ja Lirenzale.",
+      ru:"Sisulaine Media — компания, которую Марсон основал вместе с Александером Каппетом. Они делают сайты и снимают видео для соцсетей для эстонских компаний, например Selver, Таллиннский Калев, Merido Apparel и Lirenza." },
+    price: { q:{en:"How much does a website cost?",et:"Kui palju koduleht maksab?",ru:"Сколько стоит сайт?"},
+      en:"At Sisulaine Media a one-page website starts from 250 euros, up to five pages from 600 euros, and a bigger site or e-shop from 800 euros. A one-page site is usually ready in one to three days.",
+      et:"Sisulaine Medias maksab üheleheline koduleht alates 250 eurost, kuni viis lehte alates 600 eurost ning suurem leht või e-pood alates 800 eurost. Üheleheline leht valmib tavaliselt ühe kuni kolme päevaga.",
+      ru:"В Sisulaine Media одностраничный сайт стоит от 250 евро, до пяти страниц от 600 евро, а большой сайт или интернет-магазин от 800 евро. Одностраничный сайт обычно готов за один-три дня." },
+    languages: { q:{en:"Which languages does Marson speak?",et:"Mis keeli Marson räägib?",ru:"На каких языках говорит Марсон?"},
+      en:"Estonian at the highest level, Russian as a native speaker, English at C1, German at B1 with a certificate, and a little Spanish.",
+      et:"Eesti keelt kõrgeimal tasemel, vene keelt emakeelena, inglise keelt C1 tasemel, saksa keelt B1 tasemel koos sertifikaadiga ja natuke hispaania keelt.",
+      ru:"Эстонский на высшем уровне, русский как родной, английский на уровне C1, немецкий на уровне B1 с сертификатом и немного испанский." },
+    contact: { q:{en:"How can I contact Marson?",et:"Kuidas Marsoniga ühendust võtta?",ru:"Как связаться с Марсоном?"},
+      en:"Email marson.maks@gmail.com or call +372 5340 1909. For a website or a video, you can also go to sisulaine.ee.",
+      et:"Kirjuta aadressile marson.maks@gmail.com või helista numbril +372 5340 1909. Kodulehe või video jaoks vaata ka sisulaine.ee.",
+      ru:"Пишите на marson.maks@gmail.com или звоните по номеру +372 5340 1909. По поводу сайта или видео можно также зайти на sisulaine.ee." },
+    breakfast: { q:{en:"What is EBS Breakfast?",et:"Mis on EBS Breakfast?",ru:"Что такое EBS Breakfast?"},
+      en:"EBS Breakfast is a morning breakfast service for university students in Estonia. Marson proposed it to his EBS team because nothing like it exists yet.",
+      et:"EBS Breakfast on hommikusöögiteenus Eesti üliõpilastele. Marson pakkus selle oma EBS-i meeskonnale välja, sest midagi sellist veel ei ole.",
+      ru:"EBS Breakfast — это сервис завтраков для студентов в Эстонии. Марсон предложил эту идею своей команде в EBS, потому что ничего подобного пока нет." }
+  };
+  const CHIP_KEYS = ["study","sisulaine","price","languages","built","contact"];
+  const KEYWORDS = {
+    study:["study","studying","school","university","ebs","õpi","kool","ülikool","eriala","учи","университет","учёб","учеб"],
+    built:["built","build","made","you work","gemini","tehti","tegi","ehita","сдела","созда"],
+    sisulaine:["sisulaine","company","business","video","firma","ettevõte","video","компани","видео"],
+    price:["price","cost","how much","euro","maks","hind","сколько","цен","стоим"],
+    breakfast:["breakfast","hommik","завтрак"],
+    languages:["language","speak","keel","räägi","язык","говорит"],
+    contact:["contact","email","phone","call","reach","ühendust","telefon","mail","kirjuta","связ","почт","телефон"],
+    intro:["who","about him","kes","tutvusta","кто"]
+  };
 
-  function renderQuestions(){
-    const ul = $("#questions"); ul.innerHTML = "";
-    ORDER.forEach(k => {
-      const li = document.createElement("li");
-      const b = document.createElement("button");
-      b.dataset.say = k;
-      b.innerHTML = '<svg><use href="#i-play"/></svg><span></span>';
-      b.querySelector("span").textContent = A[k].q[lang];
-      li.appendChild(b); ul.appendChild(li);
-    });
-  }
-
-  // ---------- speech ----------
+  // ---------- state ----------
+  let lang = "en", state = "idle", history = [], rec = null, wantListen = false;
+  let level = 0, targetLevel = 0, micAnalyser = null, micStream = null, micData = null;
   const synth = window.speechSynthesis;
   let voices = [];
-  function loadVoices(){ voices = synth ? synth.getVoices() : []; }
+  const loadVoices = () => { voices = synth ? synth.getVoices() : []; };
   if (synth){ loadVoices(); synth.onvoiceschanged = loadVoices; }
-  function pickVoice(l){
-    const pref = l === "et" ? ["et-EE","et"] : ["en-US","en-GB","en"];
-    for (const p of pref){
-      const v = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(p.toLowerCase()));
-      if (v.length) return v.find(x => /google|natural|premium|enhanced|samantha|daniel/i.test(x.name)) || v[0];
-    }
-    return null;
+
+  function setState(s, sub){
+    state = s; talk.dataset.state = s;
+    const t = L[lang];
+    s1.classList.remove("caption");
+    s1.textContent = { idle:t.tap, listening:t.listening, thinking:t.thinking, speaking:t.speaking }[s];
+    s2.textContent = sub !== undefined ? sub : ({ idle:t.tapSub, listening:t.listeningSub, thinking:"", speaking:t.speakingSub }[s]);
+    orb.setAttribute("aria-label", s === "idle" ? t.start : t.stop);
+    targetLevel = s === "idle" ? .08 : s === "thinking" ? .22 : s === "speaking" ? .55 : .3;
   }
 
-  let energy = .12, target = .12, speaking = false, activeBtn = null;
-  function setIdle(){
-    speaking = false; target = .12; stopBtn.hidden = true;
-    status.textContent = T[lang].ready; statusSub.textContent = T[lang].readySub;
-    if (activeBtn){ activeBtn.classList.remove("playing"); activeBtn = null; }
+  function bubble(kind, text){
+    const d = document.createElement("div");
+    d.className = "bubble " + kind; d.textContent = text;
+    chat.appendChild(d); chat.scrollTop = chat.scrollHeight; return d;
   }
-  function speak(key, l, btn){
-    const a = A[key]; if (!a) return;
-    const shown = a[l + "Text"] || a[l];
-    addMsg("you", a.q[l]);
-    addMsg("bot", shown);
-    if (activeBtn) activeBtn.classList.remove("playing");
-    activeBtn = btn || null; if (activeBtn) activeBtn.classList.add("playing");
-    if (!synth){ statusSub.textContent = T[l].noVoice; return; }
-    synth.cancel();
-    const v = pickVoice(l);
-    if (l === "et" && !v){ statusSub.textContent = T[l].noVoice; status.textContent = T[l].ready; if (activeBtn){activeBtn.classList.remove("playing");activeBtn=null;} return; }
-    const u = new SpeechSynthesisUtterance(a[l]);
-    if (v){ u.voice = v; u.lang = v.lang; } else { u.lang = l === "et" ? "et-EE" : "en-US"; }
-    u.rate = 1; u.pitch = 1;
-    u.onstart = () => { speaking = true; target = .55; stopBtn.hidden = false; status.textContent = T[l].speaking; statusSub.textContent = a.q[l]; };
-    u.onboundary = () => { target = .95; setTimeout(() => { if (speaking) target = .5; }, 120); };
-    u.onend = u.onerror = setIdle;
-    synth.speak(u);
+  function typing(){
+    const d = document.createElement("div"); d.className = "bubble bot typing";
+    d.innerHTML = "<i></i><i></i><i></i>"; d.setAttribute("aria-label", L[lang].thinking);
+    chat.appendChild(d); chat.scrollTop = chat.scrollHeight; return d;
   }
-  stopBtn.addEventListener("click", () => { if (synth) synth.cancel(); setIdle(); });
 
-  document.addEventListener("click", e => {
-    const b = e.target.closest("[data-say]"); if (!b) return;
-    const l = b.dataset.lang || lang;
-    if (b.dataset.lang && b.dataset.lang !== lang) setLang(b.dataset.lang);
-    if (!b.closest("#talk")) document.getElementById("talk").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
-    speak(b.dataset.say, l, b.closest("#questions") ? b : null);
-  });
+  function renderChips(){
+    chips.innerHTML = "";
+    CHIP_KEYS.forEach(k => { const b = document.createElement("button"); b.type = "button"; b.textContent = A[k].q[lang]; b.addEventListener("click", () => ask(A[k].q[lang])); chips.appendChild(b); });
+    input.placeholder = L[lang].placeholder; form.querySelector("button").textContent = L[lang].send;
+    $("#hfLabel").textContent = L[lang].hf; $("#appLabel").textContent = L[lang].app; $("#appLink").textContent = L[lang].appLink;
+  }
 
   function setLang(l){
     lang = l;
     document.querySelectorAll("[data-lang-set]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.langSet === l)));
-    renderQuestions();
-    if (!speaking){ status.textContent = T[l].ready; statusSub.textContent = T[l].readySub; }
+    document.documentElement.lang = l;
+    renderChips(); if (state === "idle") setState("idle");
   }
   document.querySelectorAll("[data-lang-set]").forEach(b => b.addEventListener("click", () => setLang(b.dataset.langSet)));
 
-  // ---------- ask by voice ----------
-  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let rec = null;
-  function match(text){
+  // ---------- answering ----------
+  function localAnswer(text){
     const t = text.toLowerCase(); let best = null, score = 0;
     for (const [k, words] of Object.entries(KEYWORDS)){
-      const s = words.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
+      const s = words.reduce((n, w) => n + (t.includes(w) ? w.length : 0), 0);
       if (s > score){ score = s; best = k; }
     }
-    return best;
+    return best ? A[best][lang] : null;
   }
-  askBtn.addEventListener("click", () => {
-    if (!Rec){ statusSub.textContent = T[lang].noRec; return; }
-    if (rec){ rec.stop(); return; }
+
+  async function ask(text){
+    text = String(text || "").trim(); if (!text) return;
+    stopListening(true); if (synth) synth.cancel();
+    bubble("you", text);
+    history.push({ role:"user", text });
+    setState("thinking");
+    const dots = typing();
+    let reply = null, note = null;
+    if (WORKER_URL){
+      try {
+        const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 20000);
+        const r = await fetch(WORKER_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ messages: history.slice(-12), lang }), signal: ctrl.signal });
+        clearTimeout(to);
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.reply) reply = j.reply; else note = j.error || L[lang].err;
+      } catch { note = L[lang].err; }
+    } else if (!ask.warned){ note = L[lang].offline; ask.warned = true; }
+    if (!reply){ reply = localAnswer(text) || L[lang].nomatch; }
+    dots.remove();
+    if (note) bubble("sys", note);
+    bubble("bot", reply);
+    history.push({ role:"model", text: reply });
+    speak(reply);
+  }
+
+  function pickVoice(l){
+    const pref = { en:["en-US","en-GB","en"], et:["et-EE","et"], ru:["ru-RU","ru"] }[l];
+    for (const p of pref){
+      const v = voices.filter(v => v.lang && v.lang.toLowerCase().replace("_","-").startsWith(p.toLowerCase()));
+      if (v.length) return v.find(x => /google|natural|premium|enhanced|neural/i.test(x.name)) || v[0];
+    }
+    return null;
+  }
+  function speak(text){
+    const v = synth ? pickVoice(lang) : null;
+    if (!synth || !v){ if (!speak.warned){ bubble("sys", L[lang].noVoice); speak.warned = true; } afterSpeak(); return; }
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/\+372 5340 1909/g, "+372 5340 19 09"));
+    u.voice = v; u.lang = v.lang; u.rate = 1.02;
+    u.onstart = () => setState("speaking");
+    u.onboundary = () => { targetLevel = .95; setTimeout(() => { if (state === "speaking") targetLevel = .5; }, 110); };
+    u.onend = u.onerror = afterSpeak;
+    synth.speak(u);
+    // Chrome sometimes pauses long speech; keep it going.
+    clearInterval(speak.keep); speak.keep = setInterval(() => { if (!synth.speaking) clearInterval(speak.keep); else { synth.pause(); synth.resume(); } }, 10000);
+  }
+  function afterSpeak(){
+    clearInterval(speak.keep);
+    if (state === "listening") return;
+    setState("idle");
+    if (wantListen && handsFree.checked) startListening();
+  }
+
+  // ---------- listening ----------
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  async function openMic(){
+    if (micAnalyser || !navigator.mediaDevices) return;
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ac.createMediaStreamSource(micStream);
+      micAnalyser = ac.createAnalyser(); micAnalyser.fftSize = 256; src.connect(micAnalyser);
+      micData = new Uint8Array(micAnalyser.frequencyBinCount);
+    } catch (e) { /* level meter is optional */ }
+  }
+  function startListening(){
+    if (!Rec){ bubble("sys", L[lang].noRec); setState("idle"); return; }
     if (synth) synth.cancel();
-    rec = new Rec(); rec.lang = lang === "et" ? "et-EE" : "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
-    askBtn.setAttribute("aria-pressed","true"); status.textContent = T[lang].listening; statusSub.textContent = T[lang].listeningSub; target = .25;
+    wantListen = true;
+    rec = new Rec(); rec.lang = L[lang].rec; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+    let finalText = "";
+    rec.onstart = () => setState("listening");
     rec.onresult = ev => {
-      const said = ev.results[0][0].transcript; const k = match(said);
-      if (k){ speak(k, lang); }
-      else { addMsg("you", said); addMsg("bot", T[lang].nomatch); statusSub.textContent = T[lang].nomatch; }
+      let interim = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++){
+        const r = ev.results[i]; if (r.isFinal) finalText += r[0].transcript; else interim += r[0].transcript;
+      }
+      const show = (finalText + " " + interim).trim();
+      if (show){ s2.textContent = "“" + show + "”"; s2.classList.add("caption"); }
     };
-    rec.onerror = () => { statusSub.textContent = T[lang].noRec; };
-    rec.onend = () => { askBtn.setAttribute("aria-pressed","false"); rec = null; if (!speaking){ status.textContent = T[lang].ready; target = .12; } };
-    rec.start();
+    rec.onerror = ev => {
+      if (ev.error === "not-allowed" || ev.error === "service-not-allowed"){ bubble("sys", L[lang].noMic); wantListen = false; }
+      else if (ev.error === "no-speech"){ wantListen = false; setState("idle", L[lang].heard); }
+    };
+    rec.onend = () => {
+      s2.classList.remove("caption"); rec = null;
+      if (finalText.trim()) ask(finalText);
+      else if (state === "listening") setState("idle");
+    };
+    try { rec.start(); openMic(); } catch { setState("idle"); }
+  }
+  function stopListening(keepWant){
+    if (!keepWant) wantListen = false;
+    if (rec){ const r = rec; rec = null; r.onend = null; try { r.stop(); } catch {} }
+  }
+
+  orb.addEventListener("click", () => {
+    if (state === "idle") startListening();
+    else { wantListen = false; stopListening(); if (synth) synth.cancel(); clearInterval(speak.keep); setState("idle"); }
+  });
+  form.addEventListener("submit", e => { e.preventDefault(); const t = input.value; input.value = ""; wantListen = false; ask(t); });
+
+  // Intro and "ask about" buttons elsewhere on the page
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-say]"); if (!b) return;
+    if (b.dataset.lang && b.dataset.lang !== lang) setLang(b.dataset.lang);
+    document.getElementById("talk").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block:"start" });
+    const a = A[b.dataset.say]; if (!a) return;
+    wantListen = false; stopListening(); if (synth) synth.cancel();
+    bubble("you", a.q[lang]); bubble("bot", a[lang]);
+    history.push({ role:"user", text:a.q[lang] }, { role:"model", text:a[lang] });
+    speak(a[lang]);
   });
 
-  // ---------- wave ----------
-  const cv = $("#wave"), ctx = cv.getContext("2d");
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function size(){ const r = cv.getBoundingClientRect(); const d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d,0,0,d,0,0); }
+  // ---------- orb drawing ----------
+  const cv = $("#orbCanvas"), ctx = cv.getContext("2d");
+  function size(){ const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d,0,0,d,0,0); }
   size(); addEventListener("resize", size);
-  let t0 = 0;
+  function micLevel(){
+    if (!micAnalyser || state !== "listening") return null;
+    micAnalyser.getByteFrequencyData(micData);
+    let s = 0; for (let i = 2; i < 40; i++) s += micData[i]; return Math.min(1, s / (38 * 150));
+  }
   function draw(t){
-    const w = cv.clientWidth, h = cv.clientHeight; ctx.clearRect(0,0,w,h);
-    energy += (target - energy) * .08;
-    const bars = Math.max(24, Math.floor(w / 9)), gap = w / bars, mid = h / 2;
-    for (let i = 0; i < bars; i++){
-      const x = i * gap + gap / 2;
-      const env = Math.sin(Math.PI * (i + .5) / bars);
-      const n = Math.sin(i * .55 + t * .006) * .5 + Math.sin(i * 1.7 - t * .011) * .3 + Math.sin(i * .21 + t * .003) * .2;
-      const amp = (.06 + energy * (.55 + .45 * Math.abs(n))) * env;
-      const bh = Math.max(3, amp * h * .92);
-      ctx.fillStyle = energy > .2 ? `rgba(233,169,59,${.55 + .45 * env})` : `rgba(122,184,186,${.45 + .4 * env})`;
-      const bw = Math.max(2.5, gap * .45);
-      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - bw/2, mid - bh/2, bw, bh, bw/2) : ctx.rect(x - bw/2, mid - bh/2, bw, bh); ctx.fill();
+    if (reduce) t = 0;
+    const w = cv.clientWidth, h = cv.clientHeight, cx = w/2, cy = h/2, R = w * .21;
+    ctx.clearRect(0,0,w,h);
+    const m = micLevel(); if (m !== null) targetLevel = .25 + m * .9;
+    level += (targetLevel - level) * .1;
+    const listening = state === "listening", speaking = state === "speaking";
+    // soft rings
+    for (let k = 3; k >= 1; k--){
+      const rr = R + k * (w * .055) + Math.sin(t * .0016 + k) * 3 * level * 4;
+      ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+      ctx.strokeStyle = listening ? `rgba(233,169,59,${.07 * (4 - k) + level * .08})` : `rgba(122,184,186,${.05 * (4 - k) + level * .06})`;
+      ctx.lineWidth = 1.5; ctx.stroke();
     }
-    if (!reduce || speaking) requestAnimationFrame(draw);
+    // radial bars
+    const n = 72;
+    for (let i = 0; i < n; i++){
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const nse = Math.sin(i * .7 + t * .006) * .5 + Math.sin(i * 1.9 - t * .009) * .3 + Math.sin(i * .23 + t * .002) * .2;
+      const len = w * (.015 + level * (.09 + .07 * Math.abs(nse)));
+      const r0 = R + w * .028;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+      ctx.lineTo(cx + Math.cos(a) * (r0 + len), cy + Math.sin(a) * (r0 + len));
+      ctx.strokeStyle = (listening || speaking) ? `rgba(246,200,113,${.45 + .55 * Math.abs(nse)})` : `rgba(160,205,206,${.35 + .4 * Math.abs(nse)})`;
+      ctx.lineWidth = Math.max(2, w * .007); ctx.lineCap = "round"; ctx.stroke();
+    }
+    // thinking: orbiting dot
+    if (state === "thinking"){
+      const a = t * .004, rr = R + w * .2;
+      ctx.beginPath(); ctx.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, w * .012, 0, Math.PI * 2);
+      ctx.fillStyle = "#F6C871"; ctx.fill();
+    }
+    requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
-  if (reduce){ setInterval(() => requestAnimationFrame(draw), 400); }
 
-  // ---------- init ----------
-  renderQuestions();
-  addMsg("bot", T.en.greet);
-  fetch("system-prompt.md").then(r => r.text()).then(t => { $("#prompt").textContent = t; }).catch(() => { $("#prompt").innerHTML = 'See <a href="system-prompt.md">system-prompt.md</a>.'; });
+  // ---------- start ----------
+  renderChips(); setState("idle");
+  bubble("bot", L.en.greet);
+  fetch("system-prompt.md").then(r => r.text()).then(t => { const p = $("#prompt"); if (p) p.textContent = t; }).catch(() => {});
 })();
 </script>
 </body>
