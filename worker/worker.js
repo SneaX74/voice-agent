@@ -1,6 +1,7 @@
 // Cloudflare Worker: private middleman between the website and the Gemini API.
 // The Gemini key is stored as a secret named GEMINI_API_KEY in Cloudflare,
 // never in this file and never in the website.
+// SITE_HTML and SITE_PROMPT are filled in by worker/build.py (output: worker/dist.js).
 
 // gemini-3.8-flash was tested first but took over 20 seconds per answer,
 // which is too slow for a live voice conversation.
@@ -11,6 +12,7 @@ const TTS_MODEL = "gemini-3.8-flash-lite-tts";
 const TTS_VOICE = "Charon";
 const MAX_TTS_CHARS = 700;
 const ALLOWED_ORIGINS = [
+  "https://marson-voice.marson-maks.workers.dev",
   "https://sneax74.github.io",
   "http://localhost:8765",
 ];
@@ -107,6 +109,14 @@ export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
     if (request.method === "OPTIONS") return new Response(null, { headers: cors(origin) });
+
+    // The website itself, served from Cloudflare
+    if (request.method === "GET" || request.method === "HEAD") {
+      const path = new URL(request.url).pathname;
+      if (path === "/" || path === "/index.html") return new Response(SITE_HTML, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" } });
+      if (path === "/system-prompt.md") return new Response(SITE_PROMPT, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      return new Response("Not found", { status: 404 });
+    }
     if (request.method !== "POST") return json({ error: "Use POST." }, 405, origin);
     if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: "Not allowed." }, 403, origin);
     if (!env.GEMINI_API_KEY) return json({ error: "The Gemini key is not set up yet." }, 500, origin);
