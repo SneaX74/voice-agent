@@ -69,14 +69,31 @@ async function callGemini(env, contents, withThinking) {
     generationConfig: { temperature: 0.7, maxOutputTokens: MAX_OUTPUT_TOKENS },
   };
   if (withThinking) body.generationConfig.thinkingConfig = { thinkingLevel: "low" };
-  return fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
-      body: JSON.stringify(body),
+  const started = Date.now();
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 25000);
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+        body: JSON.stringify(body),
+        signal: ctrl.signal,
+      }
+    );
+    console.log(JSON.stringify({ gemini_status: res.status, ms: Date.now() - started, thinking: withThinking }));
+    if (!res.ok) {
+      const detail = (await res.clone().text()).slice(0, 400);
+      console.log(JSON.stringify({ gemini_error: detail }));
     }
-  );
+    return res;
+  } catch (e) {
+    console.log(JSON.stringify({ gemini_fetch_failed: String(e), ms: Date.now() - started }));
+    return new Response("timeout", { status: 504 });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export default {

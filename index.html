@@ -505,7 +505,7 @@
     let reply = null, note = null;
     if (WORKER_URL){
       try {
-        const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 20000);
+        const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 45000);
         const r = await fetch(WORKER_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ messages: history.slice(-12), lang }), signal: ctrl.signal });
         clearTimeout(to);
         const j = await r.json().catch(() => ({}));
