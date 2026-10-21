@@ -3,81 +3,543 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marson's Voice Assistant</title>
-<meta name="description" content="A personal voice assistant built as a Google Gemini Gem: short spoken answers in Estonian or English.">
+<title>Marson Savest, voice assistant</title>
+<meta name="description" content="Marson Maksimus Savest: entrepreneurship student at EBS and co-founder of Sisulaine Media. Talk to his voice assistant.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <style>
-  :root { --text:#16181d; --muted:#5b6170; --line:#e3e5ea; --bg:#fbfbfc; --card:#ffffff; --accent:#1f5fd1; --accent-ink:#ffffff; }
-  @media (prefers-color-scheme: dark) { :root { --text:#eceef2; --muted:#a3a9b6; --line:#2c303a; --bg:#121419; --card:#1a1d24; --accent:#8ab4f8; --accent-ink:#0d1117; } }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  main { max-width:760px; margin:0 auto; padding:40px 16px 56px; }
-  .tag { display:inline-block; font-size:13px; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
-  h1 { font-size:34px; line-height:1.15; margin:14px 0 10px; }
-  .lead { font-size:18px; color:var(--muted); margin:0 0 22px; }
-  .btn { display:inline-block; background:var(--accent); color:var(--accent-ink); text-decoration:none; font-weight:600; padding:11px 18px; border-radius:10px; margin:0 8px 8px 0; }
-  .btn.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
-  h2 { font-size:20px; margin:36px 0 12px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
-  .card b { display:block; margin-bottom:4px; }
-  .card span { color:var(--muted); font-size:15px; }
-  ol { padding-left:22px; } li { margin:6px 0; }
-  .say { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:8px; padding:8px 12px; margin:6px 0; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; }
-  summary { cursor:pointer; font-weight:600; }
-  pre { white-space:pre-wrap; word-wrap:break-word; font:14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin:12px 0 0; }
-  footer { margin-top:40px; color:var(--muted); font-size:14px; }
-  a { color:var(--accent); }
+  :root{
+    --ice:#EEF3F4; --paper:#FFFFFF; --ink:#0E2A3B; --ink-2:#3E5866; --mist:#CBD8DC;
+    --sea:#1F7A78; --sea-deep:#155C5B; --amber:#E9A93B; --amber-soft:#FBEBCB;
+    --display:"Bricolage Grotesque", system-ui, sans-serif;
+    --serif:"Source Serif 4", Georgia, serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{margin:0;background:var(--ice);color:var(--ink);font:400 18px/1.6 var(--serif);-webkit-font-smoothing:antialiased}
+  a{color:var(--sea-deep)}
+  :focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:6px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+  /* header */
+  header.top{position:sticky;top:0;z-index:20;background:rgba(238,243,244,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--mist)}
+  header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+  .mark{font:800 22px/1 var(--display);letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .mark span{color:var(--sea)}
+  nav.links{display:flex;gap:26px}
+  nav.links a{font:600 15px var(--display);color:var(--ink-2);text-decoration:none}
+  nav.links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:9px;font:600 15px/1 var(--display);padding:12px 18px;border-radius:999px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;text-decoration:none;cursor:pointer}
+  .btn:hover{background:var(--sea-deep);border-color:var(--sea-deep)}
+  .btn.line{background:transparent;color:var(--ink)}
+  .btn.line:hover{background:var(--paper)}
+  .btn svg{width:17px;height:17px;flex:none}
+  @media (max-width:820px){ nav.links{display:none} }
+
+  /* hero */
+  .hero{padding:64px 0 56px}
+  .hero .grid{display:grid;grid-template-columns:1.55fr 1fr;gap:48px;align-items:start}
+  .kicker{font:600 15px var(--display);color:var(--sea-deep);margin:0 0 14px}
+  h1{font:800 clamp(44px,7.4vw,92px)/.95 var(--display);letter-spacing:-.035em;margin:0}
+  h1 .middle{display:block;font-weight:400;color:var(--ink-2);font-size:.42em;letter-spacing:-.01em;margin:10px 0 6px}
+  .role{font:italic 400 clamp(20px,2.4vw,25px)/1.35 var(--serif);color:var(--ink-2);margin:18px 0 22px;max-width:30ch}
+  .contact{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0 0 22px;padding:0;list-style:none;font:500 15px var(--display);color:var(--ink-2)}
+  .contact li{display:flex;align-items:center;gap:7px}
+  .contact svg{width:16px;height:16px;color:var(--sea)}
+  .contact a{color:inherit;text-decoration:none;border-bottom:1px solid var(--mist)}
+  .contact a:hover{color:var(--ink);border-color:var(--ink)}
+  .lead{max-width:60ch;margin:0 0 28px;color:var(--ink)}
+  .intro-row{display:flex;flex-wrap:wrap;gap:10px}
+
+  .study{background:var(--paper);border:1px solid var(--mist);border-radius:20px;padding:26px 26px 20px;position:relative;overflow:hidden}
+  .study::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--sea)}
+  .study h2{font:700 24px/1.15 var(--display);margin:6px 0 4px;letter-spacing:-.01em}
+  .study .sub{font:500 15px var(--display);color:var(--ink-2);margin:0 0 16px}
+  .study dl{margin:0;display:grid;gap:14px;border-top:1px solid var(--mist);padding-top:16px}
+  .study dt{font:600 15px var(--display)}
+  .study dd{margin:2px 0 0;font-size:16px;line-height:1.45;color:var(--ink-2)}
+  .ask-link{display:block;width:100%;margin-top:18px;padding-top:14px;border:0;border-top:1px solid var(--mist);background:none;text-align:left;font:600 15px var(--display);color:var(--sea-deep);cursor:pointer}
+  .ask-link:hover{color:var(--ink)}
+  @media (max-width:900px){ .hero .grid{grid-template-columns:1fr} }
+
+  /* talk */
+  .talk{background:var(--ink);color:#E7F0F2;padding:72px 0}
+  .talk h2{font:800 clamp(34px,5vw,58px)/1 var(--display);letter-spacing:-.03em;margin:0 0 12px;color:#fff}
+  .talk .intro{max-width:58ch;color:#B9CDD3;margin:0 0 36px}
+  .talk .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:28px}
+  .console{background:#13374B;border:1px solid #23506A;border-radius:24px;padding:24px}
+  .langs{display:inline-flex;background:#0E2A3B;border-radius:999px;padding:4px;gap:4px}
+  .langs button{font:600 14px var(--display);border:0;background:transparent;color:#B9CDD3;padding:8px 14px;border-radius:999px;cursor:pointer}
+  .langs button[aria-pressed="true"]{background:#E7F0F2;color:var(--ink)}
+  .wave{display:block;width:100%;height:150px;margin:22px 0 8px}
+  .status{font:600 16px var(--display);color:#fff;margin:0}
+  .status-sub{font-size:15px;color:#9FB8C0;margin:4px 0 20px}
+  .console .actions{display:flex;flex-wrap:wrap;gap:10px}
+  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+  .btn.amber:hover{background:#F3BE60;border-color:#F3BE60}
+  .btn.ghost{background:transparent;border-color:#5C8496;color:#E7F0F2}
+  .btn.ghost:hover{background:#1A4560}
+  .btn.ghost[aria-pressed="true"]{border-color:var(--amber);color:var(--amber)}
+  .note{font-size:14px;color:#9FB8C0;margin:14px 0 0}
+
+  .side{display:grid;gap:20px;align-content:start}
+  .side h3{font:700 18px var(--display);margin:0 0 10px;color:#fff}
+  .questions{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+  .questions button{width:100%;text-align:left;font:400 17px/1.35 var(--serif);color:#E7F0F2;background:#13374B;border:1px solid #23506A;border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:center}
+  .questions button:hover{border-color:#5C8496}
+  .questions button.playing{border-color:var(--amber);color:#fff}
+  .questions svg{width:18px;height:18px;flex:none;color:var(--amber)}
+  .log{background:#0B2230;border:1px solid #23506A;border-radius:18px;padding:14px;max-height:280px;overflow:auto;display:grid;gap:12px}
+  .msg{font-size:16px;line-height:1.5}
+  .msg b{display:block;font:600 13px var(--display);color:#9FB8C0;margin-bottom:2px}
+  .msg.you b{color:var(--amber)}
+  @media (max-width:900px){ .talk .grid{grid-template-columns:1fr} }
+
+  /* sections */
+  section.block{padding:76px 0 20px}
+  .block h2{font:800 clamp(32px,4.4vw,50px)/1 var(--display);letter-spacing:-.03em;margin:0 0 10px}
+  .block .intro{color:var(--ink-2);max-width:60ch;margin:0 0 30px}
+
+  .project{display:grid;grid-template-columns:200px 1fr;gap:28px;padding:28px 0;border-top:1px solid var(--mist)}
+  .project:last-child{border-bottom:1px solid var(--mist)}
+  .project .when{font:600 15px var(--display);color:var(--ink-2)}
+  .project h3{font:700 26px/1.15 var(--display);letter-spacing:-.015em;margin:0 0 8px}
+  .project p{margin:0 0 12px;max-width:64ch}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+  .tags li{font:500 13px var(--display);background:var(--paper);border:1px solid var(--mist);border-radius:999px;padding:4px 10px;color:var(--ink-2)}
+  .hear{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:0;font:600 15px var(--display);color:var(--sea-deep);cursor:pointer}
+  .hear svg{width:17px;height:17px}
+  .hear:hover{color:var(--ink)}
+  details.prompt{margin-top:14px;background:var(--paper);border:1px solid var(--mist);border-radius:14px;padding:12px 16px;max-width:72ch}
+  details.prompt summary{cursor:pointer;font:600 15px var(--display)}
+  details.prompt pre{white-space:pre-wrap;font:14px/1.55 ui-monospace,Menlo,monospace;margin:12px 0 0;color:var(--ink-2)}
+  @media (max-width:720px){ .project{grid-template-columns:1fr;gap:6px} }
+
+  .timeline{display:grid;gap:0;margin:0;padding:0;list-style:none}
+  .timeline li{display:grid;grid-template-columns:200px 1fr;gap:28px;padding:22px 0;border-top:1px solid var(--mist)}
+  .timeline li:last-child{border-bottom:1px solid var(--mist)}
+  .timeline .when{font:600 15px var(--display);color:var(--ink-2)}
+  .timeline h3{font:700 21px/1.2 var(--display);margin:0 0 2px}
+  .timeline .where{font:500 15px var(--display);color:var(--sea-deep);margin:0 0 6px}
+  .timeline p{margin:0;max-width:64ch}
+  @media (max-width:720px){ .timeline li{grid-template-columns:1fr;gap:4px} }
+
+  .skills{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .skills h3{font:700 19px var(--display);margin:0 0 8px;padding-bottom:8px;border-bottom:3px solid var(--sea);display:inline-block}
+  .skills ul{margin:0;padding:0;list-style:none}
+  .skills li{padding:5px 0;border-bottom:1px dashed var(--mist)}
+  @media (max-width:820px){ .skills{grid-template-columns:1fr} }
+
+  .scale{margin-top:46px;background:var(--paper);border:1px solid var(--mist);border-radius:20px;padding:24px}
+  .scale h3{font:700 22px var(--display);margin:0 0 4px}
+  .scale .intro{margin:0 0 18px;font-size:16px}
+  .lv-head,.lv{display:grid;grid-template-columns:150px repeat(6,1fr) 170px;align-items:center;gap:4px}
+  .lv-head span{font:600 12px var(--display);color:var(--ink-2);text-align:center}
+  .lv{padding:7px 0}
+  .lv .name{font:600 16px var(--display)}
+  .lv i{height:12px;border-radius:3px;background:#E3EBED}
+  .lv i.on{background:var(--sea)}
+  .lv i.part{background:repeating-linear-gradient(135deg,var(--sea) 0 4px,#E3EBED 4px 8px)}
+  .lv .lvl{font-size:15px;color:var(--ink-2);padding-left:10px}
+  @media (max-width:720px){
+    .lv-head{display:none}
+    .lv{grid-template-columns:repeat(6,1fr);row-gap:6px}
+    .lv .name{grid-column:1/-1}
+    .lv .lvl{grid-column:1/-1;padding-left:0}
+  }
+  .interests{margin:24px 0 0;color:var(--ink-2)}
+
+  footer{margin-top:80px;background:var(--paper);border-top:1px solid var(--mist);padding:40px 0}
+  footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center}
+  footer p{margin:0}
+  [hidden]{display:none !important}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
 <body>
-<main>
-  <span class="tag">Google Gemini Gem · voice</span>
-  <h1>Marson's Voice Assistant</h1>
-  <p class="lead">A personal assistant you talk to. It answers out loud in Estonian or English, keeps replies short, and helps with business, studies and planning.</p>
-  <div id="cta">
-    <a class="btn" href="https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing">Try it in Gemini</a>
-    <a class="btn ghost" href="https://github.com/SneaX74/voice-agent">View on GitHub</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-web" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top">Marson<span>.</span></a>
+    <nav class="links" aria-label="Sections">
+      <a href="#talk">Talk</a><a href="#projects">Projects</a><a href="#experience">Experience</a><a href="#skills">Skills</a>
+    </nav>
+    <a class="btn" href="#talk"><svg><use href="#i-mic"/></svg>Talk to my assistant</a>
   </div>
+</header>
 
-  <h2>What it does</h2>
-  <div class="grid">
-    <div class="card"><b>Speaks your language</b><span>Replies in Estonian or English, whichever you use.</span></div>
-    <div class="card"><b>Built for voice</b><span>One to three sentences, no lists or symbols, numbers said naturally.</span></div>
-    <div class="card"><b>Business and study help</b><span>Ideas for Sisulaine Media, EBS coursework, planning the day.</span></div>
-    <div class="card"><b>Knows the CV</b><span>Interview practice, a 30-second intro, help with applications.</span></div>
-    <div class="card"><b>Asks before acting</b><span>Reads back messages and actions and waits for a clear "yes".</span></div>
-    <div class="card"><b>Honest</b><span>Says when it doesn't know, and gives real opinions.</span></div>
-  </div>
+<main id="top">
+  <section class="hero">
+    <div class="wrap grid">
+      <div>
+        <p class="kicker">Student, founder, builder</p>
+        <h1>Marson<span class="middle">Maksimus</span>Savest</h1>
+        <p class="role">Entrepreneurship student at EBS and co-founder of Sisulaine Media.</p>
+        <ul class="contact">
+          <li><svg><use href="#i-pin"/></svg>Estonia</li>
+          <li><svg><use href="#i-mail"/></svg><a href="mailto:marson.maks@gmail.com">marson.maks@gmail.com</a></li>
+          <li><svg><use href="#i-phone"/></svg><a href="tel:+37253401909">+372 5340 1909</a></li>
+          <li><svg><use href="#i-web"/></svg><a href="https://sisulaine.ee">sisulaine.ee</a></li>
+        </ul>
+        <p class="lead">I build websites and film marketing videos for Estonian businesses, from Selver to local sports clubs. At EBS I study how to start and run companies, and I use AI tools every day to get work done faster, like the voice assistant on this page.</p>
+        <div class="intro-row" id="introRow">
+          <button class="btn line" data-say="intro" data-lang="en"><svg><use href="#i-play"/></svg>Hear my intro</button>
+          <button class="btn line" data-say="intro" data-lang="et"><svg><use href="#i-play"/></svg>Kuula tutvustust</button>
+        </div>
+      </div>
 
-  <h2>How to use it</h2>
-  <ol>
-    <li>Have the Gemini app on your phone, or use gemini.google.com in a browser.</li>
-    <li>Tap <b>Try it in Gemini</b> above, or open the shared Gem from <a href="https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing">this link</a>. You need to be signed in to a Google account.</li>
-    <li>Tap the microphone and talk. For example:</li>
-  </ol>
-  <div class="say">"Tere! Mida ma täna kõige esimesena tegema peaksin?"</div>
-  <div class="say">"Give me three video ideas for a gym client."</div>
-  <div class="say">"Ask me interview questions for a marketing job."</div>
+      <aside class="study" aria-label="Studies">
+        <h2>EBS University</h2>
+        <p class="sub">BA in Impactful Entrepreneurship, 2026 to present</p>
+        <dl>
+          <div><dt>What I study</dt><dd>Starting and running companies, team-based startup projects, taught in English.</dd></div>
+          <div><dt>What I do outside class</dt><dd>Co-run Sisulaine Media: websites, social media videos and client work.</dd></div>
+          <div><dt>Languages</dt><dd>Estonian, Russian, English, German and some Spanish.</dd></div>
+        </dl>
+        <button class="ask-link" data-say="study">Ask the assistant about my studies</button>
+      </aside>
+    </div>
+  </section>
 
-  <h2>How it is built</h2>
-  <div class="grid">
-    <div class="card"><b>Platform</b><span>Custom Gem in Google Gemini, free plan.</span></div>
-    <div class="card"><b>Instructions</b><span>A system prompt: role, language, voice style, action and honesty rules.</span></div>
-    <div class="card"><b>Knowledge</b><span>A CV in PDF form attached to the Gem.</span></div>
-  </div>
+  <section class="talk" id="talk">
+    <div class="wrap">
+      <h2>Talk to my assistant</h2>
+      <p class="intro">My voice assistant runs on Google Gemini. Start a live conversation to ask it anything, or pick a question here and hear the answer straight away.</p>
+      <div class="grid">
+        <div class="console">
+          <div class="langs" role="group" aria-label="Answer language">
+            <button data-lang-set="en" aria-pressed="true">English</button>
+            <button data-lang-set="et" aria-pressed="false">Eesti</button>
+          </div>
+          <canvas class="wave" id="wave" aria-hidden="true"></canvas>
+          <p class="status" id="status">Ready when you are</p>
+          <p class="status-sub" id="statusSub">Pick a question, or ask by voice.</p>
+          <div class="actions">
+            <a class="btn amber" id="liveBtn" href="https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing" target="_blank" rel="noopener"><svg><use href="#i-mic"/></svg>Start live conversation in Gemini</a>
+            <button class="btn ghost" id="askBtn" aria-pressed="false"><svg><use href="#i-mic"/></svg>Ask by voice here</button>
+            <button class="btn ghost" id="stopBtn" hidden>Stop</button>
+          </div>
+          <p class="note">The live conversation opens in the Gemini app or website, so you need to be signed in to a Google account. On a phone, tap the microphone there to talk.</p>
+        </div>
 
-  <h2>The instructions</h2>
-  <details>
-    <summary>Show the full system prompt</summary>
-    <pre id="prompt">Loading…</pre>
-  </details>
+        <div class="side">
+          <div>
+            <h3>Questions you can ask</h3>
+            <ul class="questions" id="questions"></ul>
+          </div>
+          <div>
+            <h3>Conversation</h3>
+            <div class="log" id="log" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <footer>Made by Marson Maksimus Savest · <a href="https://sisulaine.ee">Sisulaine Media</a></footer>
+  <section class="block" id="projects">
+    <div class="wrap">
+      <h2>Projects</h2>
+      <p class="intro">Things I have built or am building, at school and for clients.</p>
+
+      <article class="project">
+        <div class="when">2026, EBS assignment</div>
+        <div>
+          <h3>Personal AI voice assistant</h3>
+          <ul class="tags"><li>Google Gemini</li><li>Voice</li><li>Prompt design</li><li>QR code</li></ul>
+          <p>A voice assistant that answers in Estonian or English, keeps answers short enough to listen to, and asks before it sends or publishes anything. It runs as a shared Gemini Gem with my CV attached, and this page plus a QR code make it easy for anyone to try.</p>
+          <button class="hear" data-say="built"><svg><use href="#i-play"/></svg>Hear how it was built</button>
+          <details class="prompt"><summary>Read the assistant's instructions</summary><pre id="prompt">Loading…</pre></details>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="when">Ongoing</div>
+        <div>
+          <h3>Sisulaine Media</h3>
+          <ul class="tags"><li>Websites</li><li>Social media video</li><li>Clients</li><li>Pricing</li></ul>
+          <p>The company I co-founded with Aleksander Kappet. We build custom-coded websites and film videos for businesses like Selver, JK Tallinna Kalev, Merido Apparel and Lirenza OÜ. I run the websites, film the videos and help with editing.</p>
+          <button class="hear" data-say="sisulaine"><svg><use href="#i-play"/></svg>Hear about Sisulaine</button>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="when">2026, EBS team project</div>
+        <div>
+          <h3>EBS Breakfast</h3>
+          <ul class="tags"><li>Business idea</li><li>Teamwork</li><li>Student market</li></ul>
+          <p>A morning breakfast service for university students in Estonia. I proposed it to my team because nothing like it exists here yet, and we developed it as our course project.</p>
+          <button class="hear" data-say="breakfast"><svg><use href="#i-play"/></svg>Hear about EBS Breakfast</button>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="when">2026, team idea</div>
+        <div>
+          <h3>Pet homing collar</h3>
+          <ul class="tags"><li>Product idea</li><li>Validation</li></ul>
+          <p>A collar that helps a lost pet find its way home by releasing a food scent or playing a familiar sound.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="experience">
+    <div class="wrap">
+      <h2>Experience</h2>
+      <p class="intro">Work and school, newest first.</p>
+      <ul class="timeline">
+        <li><div class="when">Now</div><div><h3>Co-founder</h3><p class="where">Sisulaine Media OÜ</p><p>Build and manage client websites, film and edit social media videos, set prices and service terms, and look after the company's own site and Google Business Profile.</p></div></li>
+        <li><div class="when">2026 to present</div><div><h3>BA in Impactful Entrepreneurship</h3><p class="where">EBS University</p><p>Courses like Seeding and Starting up, where teams look for real opportunities and turn them into business ideas.</p></div></li>
+        <li><div class="when">2026</div><div><h3>Website redesign</h3><p class="where">Hansakamin</p><p>Building a new website for a fireplace company.</p></div></li>
+        <li><div class="when">2026</div><div><h3>Freelance short-form clipper</h3><p class="where">Whop Content Rewards</p><p>Edit short clips for paid TikTok and YouTube campaigns, with a strong hook in the first seconds.</p></div></li>
+        <li><div class="when">2023 to 2026</div><div><h3>Secondary school, sports class</h3><p class="where">Arte Gümnaasium</p><p>Before that, Kadrioru Saksa Gümnaasium, where I earned a B1 German certificate.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="skills">
+    <div class="wrap">
+      <h2>Skills</h2>
+      <p class="intro">What I use day to day.</p>
+      <div class="skills">
+        <div><h3>Websites and AI</h3><ul><li>Custom-coded websites</li><li>Claude and Google Gemini</li><li>GitHub and GitHub Pages</li><li>Cloudflare and Zone hosting</li></ul></div>
+        <div><h3>Video and content</h3><ul><li>Filming for brands</li><li>Editing in CapCut</li><li>TikTok, Instagram and YouTube</li><li>Hooks for a 15 to 25 audience</li></ul></div>
+        <div><h3>Business</h3><ul><li>Client outreach and sales</li><li>Pricing and service terms</li><li>Customer service</li><li>Teamwork under deadlines</li></ul></div>
+      </div>
+
+      <div class="scale">
+        <h3>Languages</h3>
+        <p class="intro">Levels on the European scale, from A1 (beginner) to C2 (mastery).</p>
+        <div class="lv-head" aria-hidden="true"><span></span><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span><span></span></div>
+        <div class="lv"><span class="name">Estonian</span><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><span class="lvl">C2</span></div>
+        <div class="lv"><span class="name">Russian</span><i class="on"></i><i class="on"></i><i class="part"></i><i class="part"></i><i class="part"></i><i class="part"></i><span class="lvl">Native speaker, spoken C2</span></div>
+        <div class="lv"><span class="name">English</span><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><span class="lvl">C1</span></div>
+        <div class="lv"><span class="name">German</span><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span class="lvl">B1, certified</span></div>
+        <div class="lv"><span class="name">Spanish</span><i class="on"></i><i></i><i></i><i></i><i></i><i></i><span class="lvl">A1</span></div>
+        <p class="interests">Russian: fluent when speaking, reading and writing around A2. Outside work I like sport, entrepreneurship and trying new AI tools.</p>
+      </div>
+    </div>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Marson Maksimus Savest</strong><br>Want a website or video? Write to <a href="mailto:marson.maks@gmail.com">marson.maks@gmail.com</a>.</p>
+    <a class="btn line" href="https://github.com/SneaX74/voice-agent">See the code on GitHub</a>
+  </div>
+</footer>
+
 <script>
-  fetch('system-prompt.md').then(r => r.text()).then(t => { document.getElementById('prompt').textContent = t; })
-    .catch(() => { document.getElementById('prompt').innerHTML = 'See <a href="system-prompt.md">system-prompt.md</a>.'; });
+(() => {
+  const GEM = "https://gemini.google.com/gem/1l1yxxJtod04J4jTfLrYYssm9ZnaH5Awn?usp=sharing";
+
+  // Answers: text is shown, say is spoken (numbers written out where it helps)
+  const A = {
+    intro: {
+      q: { en: "Who is Marson?", et: "Kes on Marson?" },
+      en: "Hi, I'm Marson's voice assistant. Marson is an entrepreneurship student at EBS University in Estonia and the co-founder of Sisulaine Media, where he builds websites and films marketing videos for businesses like Selver. He speaks Estonian, Russian, English and German, and he uses AI tools every day in his work.",
+      et: "Tere, mina olen Marsoni hääleassistent. Marson õpib EBS-is ettevõtlust ja on Sisulaine Media kaasasutaja. Ta teeb ettevõtetele kodulehti ja turundusvideoid, näiteks Selverile. Ta räägib eesti, vene, inglise ja saksa keelt ning kasutab oma töös iga päev tehisintellekti tööriistu."
+    },
+    study: {
+      q: { en: "What is Marson studying at EBS?", et: "Mida Marson EBS-is õpib?" },
+      en: "Marson studies Impactful Entrepreneurship at EBS University, taught in English. He started in 2026. The program is about building and running companies that make a real difference, with a lot of team work on real business ideas.",
+      et: "Marson õpib EBS-is erialal Impactful Entrepreneurship ja õpe on inglise keeles. Ta alustas 2026. aastal. Õpitakse, kuidas luua ja juhtida ettevõtteid, ning palju tööd tehakse meeskonnas päris äriideedega."
+    },
+    built: {
+      q: { en: "How was this voice assistant built?", et: "Kuidas see hääleassistent tehti?" },
+      en: "I'm a custom Gem in Google Gemini. Marson wrote my instructions: who I am, to answer in the language you speak, to keep answers short for voice, and to ask before sending or publishing anything. His CV is attached so I can answer questions about him, and this page and a QR code share me with anyone.",
+      et: "Ma olen Google Gemini kohandatud Gem. Marson kirjutas mulle juhised: kes ma olen, et vastan samas keeles, milles minuga räägitakse, et hoian vastused häälkõne jaoks lühikesed ja et küsin enne midagi saatmist või avaldamist luba. Tema CV on mulle lisatud ning see leht ja QR-kood jagavad mind kõigiga."
+    },
+    sisulaine: {
+      q: { en: "What does Sisulaine Media do?", et: "Mida Sisulaine Media teeb?" },
+      en: "Sisulaine Media is the company Marson co-founded with Aleksander Kappet. They build custom-coded websites and film social media videos for Estonian businesses. Clients include Selver, JK Tallinna Kalev, Merido Apparel and Lirenza. You can find them at sisulaine dot e e.",
+      et: "Sisulaine Media on ettevõte, mille Marson asutas koos Aleksander Kappetiga. Nad teevad ettevõtetele kodulehti ja sotsiaalmeedia videoid. Klientide seas on Selver, Tallinna Kalev, Merido Apparel ja Lirenza. Rohkem infot leiab aadressilt sisulaine punkt e e.",
+      enText: "Sisulaine Media is the company Marson co-founded with Aleksander Kappet. They build custom-coded websites and film social media videos for Estonian businesses. Clients include Selver, JK Tallinna Kalev, Merido Apparel and Lirenza. You can find them at sisulaine.ee.",
+      etText: "Sisulaine Media on ettevõte, mille Marson asutas koos Aleksander Kappetiga. Nad teevad ettevõtetele kodulehti ja sotsiaalmeedia videoid. Klientide seas on Selver, Tallinna Kalev, Merido Apparel ja Lirenza. Rohkem infot leiab aadressilt sisulaine.ee."
+    },
+    breakfast: {
+      q: { en: "What is EBS Breakfast?", et: "Mis on EBS Breakfast?" },
+      en: "EBS Breakfast is a morning breakfast service for university students in Estonia. Marson proposed it to his EBS team because nothing like it exists yet, and they developed it as their course project.",
+      et: "EBS Breakfast on hommikusöögiteenus Eesti üliõpilastele. Marson pakkus selle oma EBS-i meeskonnale välja, sest midagi sellist veel ei ole, ja nad arendasid seda oma kursuseprojektina."
+    },
+    languages: {
+      q: { en: "Which languages does Marson speak?", et: "Mis keeli Marson räägib?" },
+      en: "Estonian at the highest level, Russian as a native speaker, English at C1, German at B1 with a certificate, and a little Spanish.",
+      et: "Eesti keelt kõrgeimal tasemel, vene keelt emakeelena, inglise keelt C1 tasemel, saksa keelt B1 tasemel koos sertifikaadiga ja natuke hispaania keelt."
+    },
+    contact: {
+      q: { en: "How can I contact Marson?", et: "Kuidas Marsoniga ühendust võtta?" },
+      en: "Email marson dot maks at gmail dot com, or call plus three seven two, five three four zero, one nine zero nine. For a website or a video, you can also go to sisulaine dot e e.",
+      et: "Kirjuta aadressile marson punkt maks ät gmail punkt com või helista numbril pluss kolm seitse kaks, viis kolm neli null, üks üheksa null üheksa. Kodulehe või video jaoks vaata ka sisulaine punkt e e.",
+      enText: "Email marson.maks@gmail.com, or call +372 5340 1909. For a website or a video, you can also go to sisulaine.ee.",
+      etText: "Kirjuta aadressile marson.maks@gmail.com või helista numbril +372 5340 1909. Kodulehe või video jaoks vaata ka sisulaine.ee."
+    }
+  };
+  const ORDER = ["study","built","sisulaine","languages","contact"];
+  const KEYWORDS = {
+    study: ["study","studying","school","university","ebs","õpi","kool","ülikool","eriala"],
+    built: ["built","build","made","assistant","gemini","voice","tehti","assistent","ehita"],
+    sisulaine: ["sisulaine","company","business","website","video","firma","ettevõte","kodulehe","klient"],
+    breakfast: ["breakfast","hommik"],
+    languages: ["language","speak","keel","räägi"],
+    contact: ["contact","email","phone","call","reach","ühendust","telefon","mail","kirjuta"],
+    intro: ["who","about him","kes","tutvusta"]
+  };
+
+  let lang = "en";
+  const $ = s => document.querySelector(s);
+  const status = $("#status"), statusSub = $("#statusSub"), log = $("#log"), stopBtn = $("#stopBtn"), askBtn = $("#askBtn");
+  const T = {
+    en: { ready:"Ready when you are", readySub:"Pick a question, or ask by voice.", speaking:"Speaking", listening:"Listening…", listeningSub:"Ask one of the questions in your own words.", you:"You", bot:"Marson's assistant", noVoice:"Your browser has no Estonian voice, so the answer is shown as text.", nomatch:"I can answer the questions on this page. For anything else, start a live conversation in Gemini.", noRec:"Voice input isn't supported in this browser. Try Chrome, or tap a question.", greet:"Hi, I'm Marson's voice assistant. Pick a question, ask by voice, or start a live conversation in Gemini." },
+    et: { ready:"Valmis", readySub:"Vali küsimus või küsi häälega.", speaking:"Räägin", listening:"Kuulan…", listeningSub:"Küsi mõnda neist küsimustest oma sõnadega.", you:"Sina", bot:"Marsoni assistent", noVoice:"Brauseris pole eestikeelset häält, seega näitan vastust tekstina.", nomatch:"Saan vastata sellel lehel olevatele küsimustele. Muu jaoks alusta Geminis otsevestlust.", noRec:"See brauser ei toeta häälsisestust. Proovi Chrome'i või vali küsimus.", greet:"Tere, mina olen Marsoni hääleassistent. Vali küsimus, küsi häälega või alusta Geminis otsevestlust." }
+  };
+
+  function addMsg(who, text){
+    const d = document.createElement("div");
+    d.className = "msg" + (who === "you" ? " you" : "");
+    d.innerHTML = "<b></b><span></span>";
+    d.querySelector("b").textContent = who === "you" ? T[lang].you : T[lang].bot;
+    d.querySelector("span").textContent = text;
+    log.appendChild(d); log.scrollTop = log.scrollHeight;
+  }
+
+  function renderQuestions(){
+    const ul = $("#questions"); ul.innerHTML = "";
+    ORDER.forEach(k => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.dataset.say = k;
+      b.innerHTML = '<svg><use href="#i-play"/></svg><span></span>';
+      b.querySelector("span").textContent = A[k].q[lang];
+      li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  // ---------- speech ----------
+  const synth = window.speechSynthesis;
+  let voices = [];
+  function loadVoices(){ voices = synth ? synth.getVoices() : []; }
+  if (synth){ loadVoices(); synth.onvoiceschanged = loadVoices; }
+  function pickVoice(l){
+    const pref = l === "et" ? ["et-EE","et"] : ["en-US","en-GB","en"];
+    for (const p of pref){
+      const v = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(p.toLowerCase()));
+      if (v.length) return v.find(x => /google|natural|premium|enhanced|samantha|daniel/i.test(x.name)) || v[0];
+    }
+    return null;
+  }
+
+  let energy = .12, target = .12, speaking = false, activeBtn = null;
+  function setIdle(){
+    speaking = false; target = .12; stopBtn.hidden = true;
+    status.textContent = T[lang].ready; statusSub.textContent = T[lang].readySub;
+    if (activeBtn){ activeBtn.classList.remove("playing"); activeBtn = null; }
+  }
+  function speak(key, l, btn){
+    const a = A[key]; if (!a) return;
+    const shown = a[l + "Text"] || a[l];
+    addMsg("you", a.q[l]);
+    addMsg("bot", shown);
+    if (activeBtn) activeBtn.classList.remove("playing");
+    activeBtn = btn || null; if (activeBtn) activeBtn.classList.add("playing");
+    if (!synth){ statusSub.textContent = T[l].noVoice; return; }
+    synth.cancel();
+    const v = pickVoice(l);
+    if (l === "et" && !v){ statusSub.textContent = T[l].noVoice; status.textContent = T[l].ready; if (activeBtn){activeBtn.classList.remove("playing");activeBtn=null;} return; }
+    const u = new SpeechSynthesisUtterance(a[l]);
+    if (v){ u.voice = v; u.lang = v.lang; } else { u.lang = l === "et" ? "et-EE" : "en-US"; }
+    u.rate = 1; u.pitch = 1;
+    u.onstart = () => { speaking = true; target = .55; stopBtn.hidden = false; status.textContent = T[l].speaking; statusSub.textContent = a.q[l]; };
+    u.onboundary = () => { target = .95; setTimeout(() => { if (speaking) target = .5; }, 120); };
+    u.onend = u.onerror = setIdle;
+    synth.speak(u);
+  }
+  stopBtn.addEventListener("click", () => { if (synth) synth.cancel(); setIdle(); });
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-say]"); if (!b) return;
+    const l = b.dataset.lang || lang;
+    if (b.dataset.lang && b.dataset.lang !== lang) setLang(b.dataset.lang);
+    if (!b.closest("#talk")) document.getElementById("talk").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+    speak(b.dataset.say, l, b.closest("#questions") ? b : null);
+  });
+
+  function setLang(l){
+    lang = l;
+    document.querySelectorAll("[data-lang-set]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.langSet === l)));
+    renderQuestions();
+    if (!speaking){ status.textContent = T[l].ready; statusSub.textContent = T[l].readySub; }
+  }
+  document.querySelectorAll("[data-lang-set]").forEach(b => b.addEventListener("click", () => setLang(b.dataset.langSet)));
+
+  // ---------- ask by voice ----------
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let rec = null;
+  function match(text){
+    const t = text.toLowerCase(); let best = null, score = 0;
+    for (const [k, words] of Object.entries(KEYWORDS)){
+      const s = words.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
+      if (s > score){ score = s; best = k; }
+    }
+    return best;
+  }
+  askBtn.addEventListener("click", () => {
+    if (!Rec){ statusSub.textContent = T[lang].noRec; return; }
+    if (rec){ rec.stop(); return; }
+    if (synth) synth.cancel();
+    rec = new Rec(); rec.lang = lang === "et" ? "et-EE" : "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
+    askBtn.setAttribute("aria-pressed","true"); status.textContent = T[lang].listening; statusSub.textContent = T[lang].listeningSub; target = .25;
+    rec.onresult = ev => {
+      const said = ev.results[0][0].transcript; const k = match(said);
+      if (k){ speak(k, lang); }
+      else { addMsg("you", said); addMsg("bot", T[lang].nomatch); statusSub.textContent = T[lang].nomatch; }
+    };
+    rec.onerror = () => { statusSub.textContent = T[lang].noRec; };
+    rec.onend = () => { askBtn.setAttribute("aria-pressed","false"); rec = null; if (!speaking){ status.textContent = T[lang].ready; target = .12; } };
+    rec.start();
+  });
+
+  // ---------- wave ----------
+  const cv = $("#wave"), ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function size(){ const r = cv.getBoundingClientRect(); const d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d,0,0,d,0,0); }
+  size(); addEventListener("resize", size);
+  let t0 = 0;
+  function draw(t){
+    const w = cv.clientWidth, h = cv.clientHeight; ctx.clearRect(0,0,w,h);
+    energy += (target - energy) * .08;
+    const bars = Math.max(24, Math.floor(w / 9)), gap = w / bars, mid = h / 2;
+    for (let i = 0; i < bars; i++){
+      const x = i * gap + gap / 2;
+      const env = Math.sin(Math.PI * (i + .5) / bars);
+      const n = Math.sin(i * .55 + t * .006) * .5 + Math.sin(i * 1.7 - t * .011) * .3 + Math.sin(i * .21 + t * .003) * .2;
+      const amp = (.06 + energy * (.55 + .45 * Math.abs(n))) * env;
+      const bh = Math.max(3, amp * h * .92);
+      ctx.fillStyle = energy > .2 ? `rgba(233,169,59,${.55 + .45 * env})` : `rgba(122,184,186,${.45 + .4 * env})`;
+      const bw = Math.max(2.5, gap * .45);
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - bw/2, mid - bh/2, bw, bh, bw/2) : ctx.rect(x - bw/2, mid - bh/2, bw, bh); ctx.fill();
+    }
+    if (!reduce || speaking) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  if (reduce){ setInterval(() => requestAnimationFrame(draw), 400); }
+
+  // ---------- init ----------
+  renderQuestions();
+  addMsg("bot", T.en.greet);
+  fetch("system-prompt.md").then(r => r.text()).then(t => { $("#prompt").textContent = t; }).catch(() => { $("#prompt").innerHTML = 'See <a href="system-prompt.md">system-prompt.md</a>.'; });
+})();
 </script>
 </body>
 </html>
