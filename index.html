@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marson's Voice Assistant</title>
+<meta name="description" content="A personal voice assistant built as a Google Gemini Gem: short spoken answers in Estonian or English.">
+<style>
+  :root { --text:#16181d; --muted:#5b6170; --line:#e3e5ea; --bg:#fbfbfc; --card:#ffffff; --accent:#1f5fd1; --accent-ink:#ffffff; }
+  @media (prefers-color-scheme: dark) { :root { --text:#eceef2; --muted:#a3a9b6; --line:#2c303a; --bg:#121419; --card:#1a1d24; --accent:#8ab4f8; --accent-ink:#0d1117; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:40px 16px 56px; }
+  .tag { display:inline-block; font-size:13px; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
+  h1 { font-size:34px; line-height:1.15; margin:14px 0 10px; }
+  .lead { font-size:18px; color:var(--muted); margin:0 0 22px; }
+  .btn { display:inline-block; background:var(--accent); color:var(--accent-ink); text-decoration:none; font-weight:600; padding:11px 18px; border-radius:10px; margin:0 8px 8px 0; }
+  .btn.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  h2 { font-size:20px; margin:36px 0 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .card b { display:block; margin-bottom:4px; }
+  .card span { color:var(--muted); font-size:15px; }
+  ol { padding-left:22px; } li { margin:6px 0; }
+  .say { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:8px; padding:8px 12px; margin:6px 0; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; }
+  summary { cursor:pointer; font-weight:600; }
+  pre { white-space:pre-wrap; word-wrap:break-word; font:14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin:12px 0 0; }
+  footer { margin-top:40px; color:var(--muted); font-size:14px; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Google Gemini Gem · voice</span>
+  <h1>Marson's Voice Assistant</h1>
+  <p class="lead">A personal assistant you talk to. It answers out loud in Estonian or English, keeps replies short, and helps with business, studies and planning.</p>
+  <div id="cta">
+    <!--TRY_IT-->
+    <a class="btn ghost" href="https://github.com/SneaX74/voice-agent">View on GitHub</a>
+  </div>
+
+  <h2>What it does</h2>
+  <div class="grid">
+    <div class="card"><b>Speaks your language</b><span>Replies in Estonian or English, whichever you use.</span></div>
+    <div class="card"><b>Built for voice</b><span>One to three sentences, no lists or symbols, numbers said naturally.</span></div>
+    <div class="card"><b>Business and study help</b><span>Ideas for Sisulaine Media, EBS coursework, planning the day.</span></div>
+    <div class="card"><b>Knows the CV</b><span>Interview practice, a 30-second intro, help with applications.</span></div>
+    <div class="card"><b>Asks before acting</b><span>Reads back messages and actions and waits for a clear "yes".</span></div>
+    <div class="card"><b>Honest</b><span>Says when it doesn't know, and gives real opinions.</span></div>
+  </div>
+
+  <h2>How to use it</h2>
+  <ol>
+    <li>Open the Gemini app on your phone, or gemini.google.com.</li>
+    <li>Go to <b>Gems</b> and open <b>Marson's Voice Assistant</b>.</li>
+    <li>Tap the microphone and talk. For example:</li>
+  </ol>
+  <div class="say">"Tere! Mida ma täna kõige esimesena tegema peaksin?"</div>
+  <div class="say">"Give me three video ideas for a gym client."</div>
+  <div class="say">"Ask me interview questions for a marketing job."</div>
+
+  <h2>How it is built</h2>
+  <div class="grid">
+    <div class="card"><b>Platform</b><span>Custom Gem in Google Gemini, free plan.</span></div>
+    <div class="card"><b>Instructions</b><span>A system prompt: role, language, voice style, action and honesty rules.</span></div>
+    <div class="card"><b>Knowledge</b><span>A CV in PDF form attached to the Gem.</span></div>
+  </div>
+
+  <h2>The instructions</h2>
+  <details>
+    <summary>Show the full system prompt</summary>
+    <pre id="prompt">Loading…</pre>
+  </details>
+
+  <footer>Made by Marson Maksimus Savest · <a href="https://sisulaine.ee">Sisulaine Media</a></footer>
+</main>
+<script>
+  fetch('system-prompt.md').then(r => r.text()).then(t => { document.getElementById('prompt').textContent = t; })
+    .catch(() => { document.getElementById('prompt').innerHTML = 'See <a href="system-prompt.md">system-prompt.md</a>.'; });
+</script>
+</body>
+</html>
