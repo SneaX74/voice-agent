@@ -2,9 +2,11 @@
 // The Gemini key is stored as a secret named GEMINI_API_KEY in Cloudflare,
 // never in this file and never in the website.
 
-const MODEL = "gemini-3.8-flash";          // main model
-const FAST_MODEL = "gemini-3.5-flash-lite"; // used if the main model is slow
-const MAIN_TIMEOUT_MS = 7000;
+// gemini-3.8-flash was tested first but took over 20 seconds per answer,
+// which is too slow for a live voice conversation.
+const MODEL = "gemini-3.5-flash-lite";      // answers in about a second
+const FAST_MODEL = "gemini-3.5-flash";      // backup if the main model fails
+const MAIN_TIMEOUT_MS = 10000;
 const TTS_MODEL = "gemini-3.8-flash-lite-tts";
 const TTS_VOICE = "Charon";
 const MAX_TTS_CHARS = 700;
@@ -105,28 +107,6 @@ export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
     if (request.method === "OPTIONS") return new Response(null, { headers: cors(origin) });
-    // TEMPORARY diagnostics, removed after setup
-    const u = new URL(request.url);
-    if (request.method === "GET" && u.pathname === "/diag") {
-      const out = { keySet: !!env.GEMINI_API_KEY, keyPrefix: (env.GEMINI_API_KEY || "").slice(0, 3) };
-      const t1 = Date.now();
-      try {
-        const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": env.GEMINI_API_KEY }, signal: AbortSignal.timeout(15000) });
-        const txt = await r.text();
-        out.list = { status: r.status, ms: Date.now() - t1 };
-        if (r.ok) out.flashModels = (JSON.parse(txt).models || []).map(m => m.name).filter(n => /flash/.test(n));
-        else out.list.error = txt.slice(0, 300);
-      } catch (e) { out.list = { failed: String(e), ms: Date.now() - t1 }; }
-      for (const model of [u.searchParams.get("m") || MODEL]) {
-        const t2 = Date.now();
-        try {
-          const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Say hi in three words." }] }], ...(u.searchParams.get("t") ? { generationConfig: { thinkingConfig: { thinkingLevel: u.searchParams.get("t") } } } : {}) }), signal: AbortSignal.timeout(20000) });
-          const txt = await r.text();
-          out.gen = { model, status: r.status, ms: Date.now() - t2, body: txt.slice(0, 300) };
-        } catch (e) { out.gen = { model, failed: String(e), ms: Date.now() - t2 }; }
-      }
-      return new Response(JSON.stringify(out, null, 1), { headers: { "Content-Type": "application/json" } });
-    }
     if (request.method !== "POST") return json({ error: "Use POST." }, 405, origin);
     if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: "Not allowed." }, 403, origin);
     if (!env.GEMINI_API_KEY) return json({ error: "The Gemini key is not set up yet." }, 500, origin);
@@ -174,8 +154,7 @@ export default {
     }
 
     let used = MODEL;
-    let res = await callGemini(env, contents, true, MODEL, MAIN_TIMEOUT_MS);
-    if (res.status === 400) res = await callGemini(env, contents, false, MODEL, MAIN_TIMEOUT_MS);
+    let res = await callGemini(env, contents, false, MODEL, MAIN_TIMEOUT_MS);
     if (!res.ok) { used = FAST_MODEL; res = await callGemini(env, contents, false, FAST_MODEL, 15000); }
     if (!res.ok) {
       const status = res.status === 429 ? 429 : 502;

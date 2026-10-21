@@ -35,7 +35,7 @@ A personal voice assistant built as a custom **Google Gemini Gem**. It answers o
 The page at https://sneax74.github.io/voice-agent/ has its own voice assistant:
 
 - **Listening:** the browser's speech recognition (Chrome, Edge and Safari), in English, Estonian or Russian.
-- **Thinking:** Google Gemini (`gemini-3.8-flash`, switching to `gemini-3.5-flash-lite` when it is slow) through a small Cloudflare Worker in [`worker/worker.js`](worker/worker.js). The Worker keeps the Gemini API key secret, only accepts requests from this website and limits message length.
+- **Thinking:** Google Gemini (`gemini-3.5-flash-lite` for fast answers, `gemini-3.5-flash` as backup) through a small Cloudflare Worker in [`worker/worker.js`](worker/worker.js). The Worker keeps the Gemini API key secret, only accepts requests from this website and limits message length.
 - **Speaking:** Gemini text-to-speech (`gemini-3.8-flash-lite-tts`), or the browser voice as a fallback.
 
 If the Worker isn't reachable, the page falls back to prepared answers.
